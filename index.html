@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VUNGTAUGO! - Thử Thách Bước Chân</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --primary: #007bff; --secondary: #28a745; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #f4f7f6; padding: 20px; }
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        h1 { color: var(--primary); margin-bottom: 5px; }
+        .distance-box { font-size: 48px; font-weight: bold; color: var(--primary); margin: 20px 0; }
+        .target-box { font-size: 18px; color: #666; margin-bottom: 20px; }
+        button { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; cursor: pointer; transition: 0.3s; width: 100%; }
+        button:disabled { background: #ccc; }
+        #qr-result { display: none; margin-top: 20px; border: 5px solid var(--secondary); padding: 10px; border-radius: 10px; }
+        .progress-container { background: #eee; border-radius: 20px; height: 20px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { background: var(--secondary); width: 0%; height: 100%; transition: 0.5s; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <img src="https://via.placeholder.com/100x100?text=LOGO" alt="VUNGTAUGO Logo" style="border-radius: 50%;">
+    <h1>VUNGTAUGO!</h1>
+    <p>Hành trình sức khỏe của bạn</p>
+
+    <div id="setup-stage">
+        <p>Nhấn để bốc thăm mục tiêu vận động của bạn hôm nay!</p>
+        <button onclick="startDraw()">BỐC THĂM MỤC TIÊU</button>
+    </div>
+
+    <div id="tracking-stage" style="display:none;">
+        <div class="target-box">Mục tiêu: <span id="target-value">0</span> mét</div>
+        <div class="distance-box"><span id="current-distance">0</span>m</div>
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="status-text">Đang đo quãng đường... Hãy bắt đầu di chuyển!</p>
+    </div>
+
+    <div id="reward-stage" style="display:none;">
+        <h2 style="color: var(--secondary);">CHÚC MỪNG!</h2>
+        <p>Bạn đã hoàn thành thử thách.</p>
+        <div id="qr-result">
+            <p>Đưa mã này cho nhân viên tại Booth:</p>
+            <img id="qr-image" src="" alt="QR Code nhận quà" style="width: 200px;">
+            <p><strong>Mã: VTG-SUCCESS-2024</strong></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let target = 0;
+    let totalDistance = 0;
+    let lastCoords = null;
+    let watchId = null;
+
+    function startDraw() {
+        // Bốc thăm ngẫu nhiên 10, 20, hoặc 30m để demo tại chỗ dễ thành công
+        const goals = [10, 20, 30];
+        target = goals[Math.floor(Math.random() * goals.length)];
+        
+        document.getElementById('target-value').innerText = target;
+        document.getElementById('setup-stage').style.display = 'none';
+        document.getElementById('tracking-stage').style.display = 'block';
+        
+        startTracking();
+    }
+
+    function startTracking() {
+        if (!navigator.geolocation) {
+            alert("Trình duyệt của bạn không hỗ trợ GPS.");
+            return;
+        }
+
+        watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                
+                if (lastCoords) {
+                    const dist = calculateDistance(lastCoords.lat, lastCoords.lon, latitude, longitude);
+                    if (dist > 0.001) { // Lọc nhiễu GPS nhỏ
+                        totalDistance += dist;
+                        updateUI();
+                    }
+                }
+                lastCoords = { lat: latitude, lon: longitude };
+            },
+            (err) => console.error(err),
+            { enableHighAccuracy: true }
+        );
+    }
+
+    // Công thức Haversine tính khoảng cách giữa 2 điểm GPS (trả về mét)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371e3; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function updateUI() {
+        const displayDist = Math.floor(totalDistance);
+        document.getElementById('current-distance').innerText = displayDist;
+        
+        const progress = Math.min((totalDistance / target) * 100, 100);
+        document.getElementById('progress-bar').style.width = progress + "%";
+
+        if (totalDistance >= target) {
+            completeChallenge();
+        }
+    }
+
+    function completeChallenge() {
+        navigator.geolocation.clearWatch(watchId);
+        document.getElementById('tracking-stage').style.display = 'none';
+        document.getElementById('reward-stage').style.display = 'block';
+        document.getElementById('qr-result').style.display = 'block';
+        
+        // Tạo mã QR ngẫu nhiên dựa trên mục tiêu đã hoàn thành để nhân viên kiểm tra
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=VungTauGo_Done_${target}m`;
+        document.getElementById('qr-image').src = qrUrl;
+
+        Swal.fire({
+            title: 'Tuyệt vời!',
+            text: `Bạn đã đi bộ đủ ${target}m và nhận được quà!`,
+            icon: 'success',
+            confirmButtonText: 'Nhận quà ngay'
+        });
+    }
+</script>
+
+</body>
+</html>
