@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>VungTauGO! - Chạy & Nhận Voucher</title>
+  <meta name="theme-color" content="#1a1f2b">
+  <link rel="manifest" href="manifest.json">
+  <title>🏃 VungTauGO! - Săn Voucher</title>
   
-  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
-  <!-- Font Awesome & Google Font -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
@@ -36,50 +36,7 @@
       flex-direction: column;
       height: 780px;
       max-height: 95vh;
-      position: relative;
     }
-    #welcomeScreen {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(145deg, #1e293b, #0f172a);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 30px;
-      z-index: 2000;
-    }
-    .welcome-logo {
-      font-size: 48px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #ff7b00, #ff3b00);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-bottom: 20px;
-    }
-    .welcome-sub { color: #94a3b8; margin-bottom: 40px; text-align: center; }
-    .target-selector {
-      background: #252c3b;
-      border-radius: 60px;
-      padding: 20px;
-      width: 100%;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .target-value { font-size: 52px; font-weight: 800; color: #fbbf24; line-height: 1.2; }
-    .target-unit { font-size: 18px; color: #8a9bb5; }
-    .random-target-btn {
-      background: #ff6b00; color: white; border: none; border-radius: 40px;
-      padding: 14px 24px; font-weight: 700; font-size: 20px; margin-top: 20px;
-      width: 100%; cursor: pointer; box-shadow: 0 6px 12px rgba(249,115,22,0.3);
-    }
-    .start-run-btn {
-      background: #007bff; color: white; border: none; border-radius: 60px;
-      padding: 18px; font-weight: 800; font-size: 22px; width: 100%;
-      cursor: pointer; box-shadow: 0 6px 12px rgba(0,123,255,0.3);
-    }
-    #mainApp { display: flex; flex-direction: column; height: 100%; }
     .header {
       padding: 20px 20px 10px;
       display: flex;
@@ -87,161 +44,243 @@
       align-items: center;
     }
     .title {
-      font-weight: 700; font-size: 20px;
+      font-weight: 700;
+      font-size: 20px;
       background: linear-gradient(135deg, #ff7b00, #ff3b00);
-      -webkit-background-clip: text; background-clip: text; color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
-    .target-badge { background: #252c3b; padding: 10px 16px; border-radius: 40px; font-weight: 700; color: #fbbf24; }
+    .target-area {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .target-badge {
+      background: #252c3b;
+      padding: 10px 16px;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+    .random-btn {
+      background: #ff6b00;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(249,115,22,0.3);
+    }
     .stats-panel {
-      display: flex; justify-content: space-around; padding: 15px 10px;
-      background: #212838; margin: 8px 16px; border-radius: 28px;
+      display: flex;
+      justify-content: space-around;
+      padding: 15px 10px;
+      background: #212838;
+      margin: 8px 16px;
+      border-radius: 28px;
     }
     .stat-item { text-align: center; }
-    .stat-value { font-size: 34px; font-weight: 800; line-height: 1.2; color: #f0f9ff; }
-    .stat-label { font-size: 12px; color: #8a9bb5; text-transform: uppercase; }
-    .step-trust { font-size: 10px; margin-top: 2px; color: #4ade80; }
+    .stat-value {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #f0f9ff;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #8a9bb5;
+      text-transform: uppercase;
+    }
+    .step-trust {
+      font-size: 10px;
+      margin-top: 2px;
+      color: #4ade80;
+    }
     .map-container {
-      flex: 1; margin: 8px 16px; border-radius: 24px; overflow: hidden;
-      border: 2px solid #2e3a4e; background: #1e2632; position: relative;
+      flex: 1;
+      margin: 8px 16px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 2px solid #2e3a4e;
+      background: #1e2632;
+      position: relative;
       min-height: 280px;
     }
     #map { width: 100%; height: 100%; z-index: 1; }
     .gps-status {
-      position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7);
-      color: #9cd49c; padding: 6px 12px; border-radius: 20px; font-size: 12px;
-      z-index: 1000; backdrop-filter: blur(4px); pointer-events: none;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      color: #9cd49c;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
     }
     .fusion-badge {
-      position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7);
-      color: #fbbf24; padding: 4px 12px; border-radius: 20px; font-size: 11px;
-      z-index: 1000; backdrop-filter: blur(4px);
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.7);
+      color: #fbbf24;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
     }
     .controls {
-      display: flex; gap: 12px; padding: 20px 16px 25px; justify-content: center;
+      display: flex;
+      gap: 12px;
+      padding: 20px 16px 25px;
+      justify-content: center;
     }
     .ctrl-btn {
-      flex: 1; padding: 16px 0; border: none; border-radius: 60px; font-weight: 700;
-      font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;
-      cursor: pointer; transition: 0.2s; background: #2d3748; color: #e2e8f0;
+      flex: 1;
+      padding: 16px 0;
+      border: none;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      background: #2d3748;
+      color: #e2e8f0;
       border: 1px solid #3e4c61;
     }
-    .ctrl-btn.primary { background: #ff5722; color: white; border: none; }
+    .ctrl-btn.primary {
+      background: #ff5722;
+      color: white;
+      border: none;
+    }
     .ctrl-btn:disabled { opacity: 0.4; pointer-events: none; }
     
+    /* Modal */
     .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center; z-index: 9999;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
       visibility: hidden;
     }
     .modal-card {
-      background: #1e293b; border-radius: 40px; padding: 30px 25px;
-      max-width: 340px; width: 90%; text-align: center; border: 2px solid #fbbf24;
+      background: #1e293b;
+      border-radius: 40px;
+      padding: 30px 25px;
+      max-width: 340px;
+      width: 90%;
+      text-align: center;
+      border: 2px solid #fbbf24;
       box-shadow: 0 30px 40px #00000055;
     }
     .modal-icon { font-size: 64px; color: #fbbf24; margin-bottom: 15px; }
     .voucher-code {
-      background: #0f172a; padding: 16px; border-radius: 20px; font-size: 28px;
-      font-weight: 800; letter-spacing: 4px; color: #facc15; border: 2px dashed #fbbf24;
+      background: #0f172a;
+      padding: 16px;
+      border-radius: 20px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #facc15;
+      border: 2px dashed #fbbf24;
       margin: 20px 0;
     }
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
     .modal-btn {
-      background: #ff6b00; border: none; color: white; padding: 16px; width: 100%;
-      border-radius: 40px; font-weight: bold; font-size: 18px; cursor: pointer;
+      background: #2d3748;
+      border: none;
+      color: white;
+      padding: 14px;
+      flex: 1;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
     }
-    
-    .summary-modal {
-      position: absolute; bottom: 0; left: 0; right: 0; background: #1a1f2b;
-      border-top-left-radius: 32px; border-top-right-radius: 32px; padding: 20px 16px 25px;
-      z-index: 1500; transform: translateY(100%); transition: transform 0.3s ease;
-      box-shadow: 0 -10px 30px rgba(0,0,0,0.5); border-top: 2px solid #ff5722;
-      max-height: 80vh; overflow-y: auto;
-    }
-    .summary-modal.show { transform: translateY(0); }
-    .summary-title { font-size: 22px; font-weight: 700; margin-bottom: 15px; text-align: center; color: #ff5722; }
-    .summary-stats { display: flex; justify-content: space-around; margin-bottom: 20px; }
-    .summary-stat { text-align: center; }
-    .summary-value { font-size: 28px; font-weight: 800; }
-    .summary-label { font-size: 12px; color: #8a9bb5; }
-    .route-preview { background: #0f172a; border-radius: 20px; padding: 10px; margin: 15px 0; }
-    #routeCanvas { width: 100%; height: auto; background: #1e293b; border-radius: 12px; display: block; }
-    .new-run-btn {
-      background: #007bff; color: white; border: none; border-radius: 60px;
-      padding: 16px; font-weight: 700; font-size: 18px; width: 100%; cursor: pointer;
+    .modal-btn.primary {
+      background: #ff6b00;
     }
     .footnote {
-      padding: 0 20px 15px; font-size: 12px; color: #7c8ba0;
-      display: flex; justify-content: space-between;
+      padding: 0 20px 15px;
+      font-size: 12px;
+      color: #7c8ba0;
+      display: flex;
+      justify-content: space-between;
     }
   </style>
 </head>
 <body>
 <div id="app">
-  <!-- Welcome Screen -->
-  <div id="welcomeScreen">
-    <div class="welcome-logo">VungTauGO!</div>
-    <div class="welcome-sub">Chạy bộ – Nhận voucher mỗi ngày</div>
-    <div class="target-selector">
-      <div class="target-value" id="welcomeTargetValue">50</div>
-      <div class="target-unit">MÉT MỤC TIÊU</div>
-      <button class="random-target-btn" id="welcomeRandomBtn"><i class="fas fa-dice"></i> RANDOM MỤC TIÊU</button>
-    </div>
-    <button class="start-run-btn" id="startFromWelcomeBtn"><i class="fas fa-play"></i> BẮT ĐẦU CHẠY</button>
-    <p style="margin-top: 20px; color: #64748b; font-size: 12px;">Mục tiêu dưới 100m</p>
-  </div>
-  
-  <!-- Main App -->
-  <div id="mainApp" style="display: none;">
-    <div class="header">
-      <span class="title"><i class="fas fa-route"></i> VungTauGO!</span>
+  <div class="header">
+    <span class="title"><i class="fas fa-route"></i> VungTauGO!</span>
+    <div class="target-area">
       <div class="target-badge" id="targetDisplay">🎲 0m</div>
-    </div>
-    <div class="stats-panel">
-      <div class="stat-item"><div class="stat-value" id="distanceDisplay">0</div><div class="stat-label">MÉT</div></div>
-      <div class="stat-item"><div class="stat-value" id="stepsDisplay">0</div><div class="stat-label">BƯỚC CHÂN</div><div class="step-trust" id="stepTrustDisplay">✅ Hợp lệ</div></div>
-      <div class="stat-item"><div class="stat-value" id="timerDisplay">00:00</div><div class="stat-label">THỜI GIAN</div></div>
-    </div>
-    <div class="map-container">
-      <div id="map"></div>
-      <div class="gps-status" id="gpsStatus">🛰️ Đang chờ GPS...</div>
-      <div class="fusion-badge" id="fusionBadge">🧭 Sẵn sàng</div>
-    </div>
-    <div class="controls">
-      <button class="ctrl-btn primary" id="pauseBtn" disabled><i class="fas fa-pause"></i> TẠM DỪNG</button>
-      <button class="ctrl-btn" id="stopBtn" disabled><i class="fas fa-stop"></i> KẾT THÚC</button>
-    </div>
-    <div class="footnote">
-      <span><i class="fas fa-shoe-prints"></i> Mỗi bước = +mét</span>
-      <span>🏆 Voucher khi hoàn thành</span>
+      <button class="random-btn" id="randomTargetBtn"><i class="fas fa-dice"></i> MỤC TIÊU</button>
     </div>
   </div>
   
-  <!-- Summary Modal -->
-  <div class="summary-modal" id="summaryModal">
-    <div class="summary-title">🏁 TỔNG KẾT CHẠY</div>
-    <div class="summary-stats">
-      <div class="summary-stat"><div class="summary-value" id="summaryDistance">0</div><div class="summary-label">Mét</div></div>
-      <div class="summary-stat"><div class="summary-value" id="summaryTime">00:00</div><div class="summary-label">Thời gian</div></div>
-      <div class="summary-stat"><div class="summary-value" id="summarySteps">0</div><div class="summary-label">Bước</div></div>
+  <div class="stats-panel">
+    <div class="stat-item">
+      <div class="stat-value" id="distanceDisplay">0</div>
+      <div class="stat-label">MÉT</div>
     </div>
-    <div class="route-preview">
-      <canvas id="routeCanvas" width="400" height="200"></canvas>
+    <div class="stat-item">
+      <div class="stat-value" id="stepsDisplay">0</div>
+      <div class="stat-label">BƯỚC CHÂN</div>
+      <div class="step-trust" id="stepTrustDisplay">✅ Hợp lệ</div>
     </div>
-    <p style="text-align: center; color: #94a3b8; margin-bottom: 10px;"><i class="fas fa-map-marked-alt"></i> Hình ảnh cung đường</p>
-    <button class="new-run-btn" id="newRunBtn"><i class="fas fa-redo-alt"></i> CHẠY MỚI</button>
+    <div class="stat-item">
+      <div class="stat-value" id="timerDisplay">00:00</div>
+      <div class="stat-label">THỜI GIAN</div>
+    </div>
+  </div>
+  
+  <div class="map-container">
+    <div id="map"></div>
+    <div class="gps-status" id="gpsStatus">🛰️ Chưa khởi động</div>
+    <div class="fusion-badge" id="fusionBadge">🧭 Sẵn sàng</div>
+  </div>
+  
+  <div class="controls">
+    <button class="ctrl-btn primary" id="startBtn"><i class="fas fa-play"></i> BẮT ĐẦU</button>
+    <button class="ctrl-btn" id="pauseBtn" disabled><i class="fas fa-pause"></i> TẠM DỪNG</button>
+    <button class="ctrl-btn" id="stopBtn" disabled><i class="fas fa-stop"></i> KẾT THÚC</button>
+  </div>
+  <div class="footnote">
+    <span><i class="fas fa-shoe-prints"></i> Mỗi bước = +mét</span>
+    <span>🏆 Voucher khi hoàn thành</span>
   </div>
 </div>
 
-<!-- Voucher Modal -->
 <div class="modal-overlay" id="voucherModal">
   <div class="modal-card">
     <div class="modal-icon">🏆</div>
     <h2 style="margin-bottom: 8px;">Chúc mừng!</h2>
-    <p>Bạn đã nhận được voucher từ</p>
-    <p style="font-weight: 800; color: #ff5722; margin-bottom: 10px;">VungTauGO!</p>
+    <p style="margin-bottom: 5px;">Bạn đã hoàn thành mục tiêu</p>
     <div class="voucher-code" id="voucherCode">VTGO-ABC123</div>
-    <p>Mã giảm giá đặc biệt</p>
-    <button class="modal-btn" id="voucherOkBtn">XEM TỔNG KẾT</button>
+    <p style="margin-bottom: 20px;">Mã giảm giá đặc biệt</p>
+    <div class="modal-buttons">
+      <button class="modal-btn" id="continueBtn">🏃 Chạy tiếp</button>
+      <button class="modal-btn primary" id="finishBtn">✅ Kết thúc</button>
+    </div>
   </div>
 </div>
 
@@ -251,6 +290,7 @@
 
     // ---------- CẤU HÌNH ----------
     const CONFIG = {
+      kalman: { Q: 0.001, R: 10, P: 1 },
       pedometer: {
         minStepInterval: 280,
         maxStepFreq: 3.5,
@@ -263,20 +303,21 @@
         calibrationSteps: 30,
       },
       gps: {
-        minDistance: 0.001,      // 1m
-        maxSpeed: 3.0,           // m/s (~10.8 km/h)
-        maxJumpDistance: 0.02,   // 20m
-        goodAccuracy: 20,
-        weakSignalThreshold: 40
+        minDistance: 0.001,
+        maxSpeed: 2.5,
+        maxJumpDistance: 0.015,
+        goodAccuracy: 15,
+        mediumAccuracy: 25,
+        weakSignalThreshold: 30
       },
-      map: {
-        maxPathPoints: 1000,
-        updateInterval: 300      // ms
+      compass: {
+        alphaFilter: 0.2,          // low-pass filter cho la bàn
+        deadReckoningEnabled: true
       }
     };
 
     // ---------- STATE ----------
-    let targetDistanceKm = 0.05;
+    let targetDistanceKm = 0.1;
     let currentDistanceKm = 0.0;
     let steps = 0;
     let isActive = false;
@@ -285,10 +326,12 @@
     let elapsedSeconds = 0;
     let timerInterval = null;
     
-    // GPS
-    let watchId = null;
-    let lastValidPosition = null;
+    // GPS & Kalman
+    let kalman = { lat: null, lng: null, vLat: 0, vLng: 0, P: CONFIG.kalman.P };
     let lastGpsTimestamp = null;
+    let lastFusionTimestamp = null;
+    let watchId = null;
+    let lastValidPosition = null;        // vị trí đáng tin cậy cuối cùng (GPS tốt hoặc dead reckoning)
     
     // Bước chân
     let currentStepLength = CONFIG.pedometer.defaultStepLength;
@@ -298,9 +341,13 @@
     let shakeCounter = 0;
     let stepTrust = true;
     
-    // Chuyển động
+    // Phát hiện chuyển động
     let accHistory = [];
     let isMoving = false;
+    
+    // La bàn
+    let compassHeading = null;           // hướng la bàn (0-360 độ, 0 = Bắc)
+    let lastCompassUpdate = 0;
     
     // Map
     let map;
@@ -308,32 +355,26 @@
     let startMarker = null;
     let pathPolyline;
     let pathCoordinates = [];
-    let lastMapUpdateTime = 0;
+    
+    // Dead reckoning
+    let lastDeadReckoningPos = null;
     
     // UI Elements
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const mainApp = document.getElementById('mainApp');
-    const welcomeTargetValue = document.getElementById('welcomeTargetValue');
-    const welcomeRandomBtn = document.getElementById('welcomeRandomBtn');
-    const startFromWelcomeBtn = document.getElementById('startFromWelcomeBtn');
-    const targetDisplay = document.getElementById('targetDisplay');
     const distanceEl = document.getElementById('distanceDisplay');
     const stepsEl = document.getElementById('stepsDisplay');
     const timerEl = document.getElementById('timerDisplay');
-    const stepTrustDisplay = document.getElementById('stepTrustDisplay');
+    const targetDisplay = document.getElementById('targetDisplay');
     const gpsStatusEl = document.getElementById('gpsStatus');
+    const stepTrustDisplay = document.getElementById('stepTrustDisplay');
     const fusionBadge = document.getElementById('fusionBadge');
+    const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
     const stopBtn = document.getElementById('stopBtn');
-    const voucherModal = document.getElementById('voucherModal');
+    const randomTargetBtn = document.getElementById('randomTargetBtn');
+    const modalOverlay = document.getElementById('voucherModal');
     const voucherCodeEl = document.getElementById('voucherCode');
-    const voucherOkBtn = document.getElementById('voucherOkBtn');
-    const summaryModal = document.getElementById('summaryModal');
-    const summaryDistance = document.getElementById('summaryDistance');
-    const summaryTime = document.getElementById('summaryTime');
-    const summarySteps = document.getElementById('summarySteps');
-    const routeCanvas = document.getElementById('routeCanvas');
-    const newRunBtn = document.getElementById('newRunBtn');
+    const continueBtn = document.getElementById('continueBtn');
+    const finishBtn = document.getElementById('finishBtn');
 
     // ---------- TIỆN ÍCH ----------
     function formatTime(sec) {
@@ -350,31 +391,119 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
     
+    // Chuyển đổi từ mét sang độ (gần đúng)
+    function metersToLat(meters) { return meters / 111320; }
+    function metersToLng(meters, lat) { return meters / (111320 * Math.cos(lat * Math.PI / 180)); }
+    
     function updateUI() {
       distanceEl.textContent = Math.round(currentDistanceKm * 1000);
       stepsEl.textContent = steps;
       timerEl.textContent = formatTime(elapsedSeconds);
     }
     
-    function updateTargetDisplay() {
-      targetDisplay.textContent = `🎲 ${Math.round(targetDistanceKm * 1000)}m`;
+    // ---------- RANDOM MỤC TIÊU ----------
+    function generateRandomTarget() {
+      const randomMeters = Math.floor(Math.random() * (300 - 50 + 1)) + 50;
+      targetDistanceKm = randomMeters / 1000;
+      targetDisplay.textContent = `🎲 ${randomMeters}m`;
     }
 
-    // ---------- WELCOME ----------
-    function randomTargetUnder100() {
-      const meters = Math.floor(Math.random() * 71) + 30; // 30-100
-      targetDistanceKm = meters / 1000;
-      welcomeTargetValue.textContent = meters;
+    // ---------- KALMAN ----------
+    function resetKalman() {
+      kalman = { lat: null, lng: null, vLat: 0, vLng: 0, P: CONFIG.kalman.P };
     }
-    randomTargetUnder100();
     
-    welcomeRandomBtn.addEventListener('click', randomTargetUnder100);
-    startFromWelcomeBtn.addEventListener('click', () => {
-      welcomeScreen.style.display = 'none';
-      mainApp.style.display = 'flex';
-      updateTargetDisplay();
-      startActivity();
-    });
+    function kalmanUpdate(measuredLat, measuredLng, dt, accuracy) {
+      if (kalman.lat === null) {
+        kalman.lat = measuredLat;
+        kalman.lng = measuredLng;
+        return { lat: measuredLat, lng: measuredLng };
+      }
+      const R = Math.max(1, Math.min(30, accuracy)) * 0.4;
+      const Q = CONFIG.kalman.Q * dt;
+      let predLat = kalman.lat + kalman.vLat * dt;
+      let predLng = kalman.lng + kalman.vLng * dt;
+      let P = kalman.P + Q;
+      const K = P / (P + R);
+      const innovLat = measuredLat - predLat;
+      const innovLng = measuredLng - predLng;
+      kalman.lat = predLat + K * innovLat;
+      kalman.lng = predLng + K * innovLng;
+      kalman.vLat = kalman.vLat + (K * innovLat) / dt;
+      kalman.vLng = kalman.vLng + (K * innovLng) / dt;
+      kalman.P = (1 - K) * P;
+      return { lat: kalman.lat, lng: kalman.lng };
+    }
+
+    // ---------- HIỆU CHỈNH ĐỘ DÀI BƯỚC (từ GPS) ----------
+    function calibrateStepLengthFromGPS(gpsDistKm) {
+      if (stepsSinceLastCalibration === 0) return;
+      const stepDistKm = (stepsSinceLastCalibration * currentStepLength) / 1000;
+      const ratio = gpsDistKm / stepDistKm;
+      if (ratio > 0.7 && ratio < 1.5) {
+        const rawStepLength = (gpsDistKm * 1000) / stepsSinceLastCalibration;
+        const clamped = Math.min(CONFIG.pedometer.stepLengthMax, Math.max(CONFIG.pedometer.stepLengthMin, rawStepLength));
+        currentStepLength = currentStepLength * 0.5 + clamped * 0.5;
+      }
+      stepsSinceLastCalibration = 0;
+      gpsDistanceSinceLastCalibration = 0;
+    }
+
+    // ---------- CẬP NHẬT BẢN ĐỒ & ĐƯỜNG ĐI (STRAVA STYLE) ----------
+    function updatePath(lat, lng, isAccurate = true) {
+      if (!map) return;
+      
+      pathCoordinates.push([lat, lng]);
+      
+      if (pathPolyline) {
+        pathPolyline.setLatLngs(pathCoordinates);
+      } else {
+        pathPolyline = L.polyline(pathCoordinates, {
+          color: '#ff5722',
+          weight: 8,
+          opacity: 0.95,
+          smoothFactor: 1.0,
+          className: 'strava-path'
+        }).addTo(map);
+        pathPolyline.setStyle({ 
+          shadowPane: true,
+          shadowBlur: 10,
+          shadowColor: '#ff3b00'
+        });
+      }
+      
+      const iconHtml = `<div style="background:#ff5722; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 0 15px #ff5722;"></div>`;
+      if (userMarker) {
+        userMarker.setLatLng([lat, lng]);
+      } else {
+        userMarker = L.marker([lat, lng], {
+          icon: L.divIcon({className: 'custom-marker', html: iconHtml, iconSize: [24, 24], iconAnchor: [12, 12]})
+        }).addTo(map);
+      }
+      
+      if (!startMarker && isActive) {
+        const startIcon = L.divIcon({
+          html: '<div style="background:#10b981; width:16px; height:16px; border-radius:50%; border:3px solid white; box-shadow:0 0 12px #10b981;"></div>',
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
+        });
+        startMarker = L.marker([lat, lng], { icon: startIcon }).addTo(map);
+        startMarker.bindTooltip('🚩 Xuất phát', { permanent: false });
+      }
+      
+      map.setView([lat, lng], map.getZoom());
+    }
+
+    // ---------- DEAD RECKONING DÙNG LA BÀN + BƯỚC ----------
+    function performDeadReckoning(stepDistanceMeters) {
+      if (!lastValidPosition || compassHeading === null) return null;
+      const headingRad = (compassHeading * Math.PI) / 180;
+      const deltaLat = metersToLat(stepDistanceMeters * Math.cos(headingRad));
+      const deltaLng = metersToLng(stepDistanceMeters * Math.sin(headingRad), lastValidPosition.lat);
+      const newLat = lastValidPosition.lat + deltaLat;
+      const newLng = lastValidPosition.lng + deltaLng;
+      return { lat: newLat, lng: newLng };
+    }
 
     // ---------- PEDOMETER ----------
     function initPedometer() {
@@ -383,7 +512,7 @@
         document.body.addEventListener('click', function iosPerm() {
           DeviceMotionEvent.requestPermission().then(perm => {
             if (perm === 'granted') window.addEventListener('devicemotion', handleMotion);
-          });
+          }).catch(console.error);
           document.body.removeEventListener('click', iosPerm);
         }, { once: true });
       } else {
@@ -393,16 +522,19 @@
     
     function handleMotion(event) {
       if (!isActive || isPaused) return;
+      
       const acc = event.accelerationIncludingGravity;
       if (!acc) return;
-      const magnitude = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+      
+      const x = acc.x, y = acc.y, z = acc.z;
+      const magnitude = Math.sqrt(x*x + y*y + z*z);
       const now = Date.now();
       
       accHistory.push(magnitude);
       if (accHistory.length > 10) accHistory.shift();
       if (accHistory.length >= 5) {
-        const avg = accHistory.reduce((s,v)=>s+v,0)/accHistory.length;
-        const variance = accHistory.reduce((s,v)=>s+(v-avg)**2,0)/accHistory.length;
+        const avg = accHistory.reduce((s, v) => s + v, 0) / accHistory.length;
+        const variance = accHistory.reduce((s, v) => s + Math.pow(v - avg, 2), 0) / accHistory.length;
         isMoving = variance > 0.8;
       }
       
@@ -410,42 +542,79 @@
         shakeCounter++;
         if (shakeCounter >= CONFIG.pedometer.maxShakeCount) {
           const lostSteps = 2;
-          const lostDist = (lostSteps * currentStepLength) / 1000;
+          const lostDistKm = (lostSteps * currentStepLength) / 1000;
           steps = Math.max(0, steps - lostSteps);
           stepsSinceLastCalibration = Math.max(0, stepsSinceLastCalibration - lostSteps);
-          currentDistanceKm = Math.max(0, currentDistanceKm - lostDist);
+          currentDistanceKm = Math.max(0, currentDistanceKm - lostDistKm);
           shakeCounter = 0;
           stepTrust = false;
-          stepTrustDisplay.innerHTML = '⚠️ Gian lận - đã trừ';
+          stepTrustDisplay.innerHTML = '⚠️ Gian lận - trừ bước & mét';
           stepTrustDisplay.style.color = '#f87171';
+          fusionBadge.innerHTML = `⚠️ Đã trừ ${(lostDistKm*1000).toFixed(0)}m`;
           updateUI();
+          if (currentDistanceKm >= targetDistanceKm) completeGoal();
         }
         return;
-      } else shakeCounter = Math.max(0, shakeCounter-1);
+      } else {
+        shakeCounter = Math.max(0, shakeCounter - 1);
+      }
       
       if (magnitude > CONFIG.pedometer.threshold && (now - lastStepTime) > CONFIG.pedometer.minStepInterval) {
-        const freq = 1000 / (now - lastStepTime);
-        if (freq < CONFIG.pedometer.maxStepFreq) {
+        const stepFreq = 1000 / (now - lastStepTime);
+        if (stepFreq < CONFIG.pedometer.maxStepFreq) {
           steps++;
           stepsSinceLastCalibration++;
           lastStepTime = now;
           stepTrust = true;
           stepTrustDisplay.innerHTML = '✅ Hợp lệ';
           stepTrustDisplay.style.color = '#4ade80';
+          shakeCounter = 0;
           
-          currentDistanceKm += currentStepLength / 1000;
+          const stepDistKm = currentStepLength / 1000;
+          currentDistanceKm += stepDistKm;
           updateUI();
-          fusionBadge.innerHTML = `👟 Bước ${currentStepLength.toFixed(2)}m | ${(currentDistanceKm*1000).toFixed(0)}m`;
+          
+          const timeSinceLastGps = lastGpsTimestamp ? Date.now() - lastGpsTimestamp : 9999;
+          if (timeSinceLastGps > 3000 && CONFIG.compass.deadReckoningEnabled) {
+            const newPos = performDeadReckoning(currentStepLength);
+            if (newPos) {
+              updatePath(newPos.lat, newPos.lng, false);
+              fusionBadge.innerHTML = `🧭 La bàn ước tính | Bước ${currentStepLength.toFixed(2)}m`;
+            } else {
+              fusionBadge.innerHTML = `👟 Bước (không GPS, không la bàn)`;
+            }
+          } else {
+            fusionBadge.innerHTML = `👟 Bước ${currentStepLength.toFixed(2)}m | Tổng ${(currentDistanceKm*1000).toFixed(0)}m`;
+          }
           
           if (currentDistanceKm >= targetDistanceKm) completeGoal();
+        } else {
+          stepTrustDisplay.innerHTML = '⚠️ Bước quá nhanh';
+          stepTrustDisplay.style.color = '#fbbf24';
         }
       }
     }
 
-    // ---------- GPS (ĐƠN GIẢN, KHÔNG KALMAN ĐỂ GIẢM LAG) ----------
-    function handlePosition(pos) {
-      const { latitude, longitude, accuracy } = pos.coords;
+    // ---------- LA BÀN ----------
+    function initCompass() {
+      if (!window.DeviceOrientationEvent) return;
+      window.addEventListener('deviceorientation', handleOrientation, true);
+    }
+    
+    let alphaFiltered = null;
+    function handleOrientation(event) {
+      if (event.alpha === null) return;
       const now = Date.now();
+      if (alphaFiltered === null) alphaFiltered = event.alpha;
+      else alphaFiltered = alphaFiltered * (1 - CONFIG.compass.alphaFilter) + event.alpha * CONFIG.compass.alphaFilter;
+      compassHeading = alphaFiltered;
+      lastCompassUpdate = now;
+    }
+
+    // ---------- GPS ----------
+    function handlePosition(position) {
+      const { latitude, longitude, accuracy } = position.coords;
+      const now = position.timestamp;
       lastGpsTimestamp = now;
       
       if (accuracy > CONFIG.gps.weakSignalThreshold) {
@@ -454,332 +623,172 @@
       }
       gpsStatusEl.innerHTML = `🛰️ GPS ${Math.round(accuracy)}m`;
       
+      let filteredLat = latitude, filteredLng = longitude;
+      if (lastFusionTimestamp && kalman.lat !== null) {
+        const dt = (now - lastFusionTimestamp) / 1000;
+        if (dt > 0 && dt < 10) {
+          const filtered = kalmanUpdate(latitude, longitude, dt, accuracy);
+          filteredLat = filtered.lat;
+          filteredLng = filtered.lng;
+        }
+      }
+      lastFusionTimestamp = now;
+      
       if (!lastValidPosition) {
-        lastValidPosition = { lat: latitude, lng: longitude, ts: now };
-        addPathPoint(latitude, longitude);
+        lastValidPosition = { lat: filteredLat, lng: filteredLng, timestamp: now };
+        updatePath(filteredLat, filteredLng);
         return;
       }
       
-      const dist = haversine(lastValidPosition.lat, lastValidPosition.lng, latitude, longitude);
-      const timeDiff = (now - lastValidPosition.ts) / 1000;
+      const dist = haversine(lastValidPosition.lat, lastValidPosition.lng, filteredLat, filteredLng);
+      const timeDiff = (now - lastValidPosition.timestamp) / 1000;
       let valid = true;
-      
       if (timeDiff > 0) {
         const speed = dist / timeDiff;
-        if (speed > CONFIG.gps.maxSpeed || dist > CONFIG.gps.maxJumpDistance) {
-          valid = false;
-          gpsStatusEl.innerHTML += ' 🚫 Nhảy';
-        }
+        if (speed > CONFIG.gps.maxSpeed || dist > CONFIG.gps.maxJumpDistance) valid = false;
         if (!isMoving && speed < 0.5) valid = false;
       }
       
       if (valid && isActive && !isPaused) {
         if (dist >= CONFIG.gps.minDistance) {
           gpsDistanceSinceLastCalibration += dist;
-          if (stepsSinceLastCalibration >= CONFIG.pedometer.calibrationSteps) {
-            const stepDistKm = (stepsSinceLastCalibration * currentStepLength) / 1000;
-            const ratio = gpsDistanceSinceLastCalibration / stepDistKm;
-            if (ratio > 0.7 && ratio < 1.5) {
-              const raw = (gpsDistanceSinceLastCalibration * 1000) / stepsSinceLastCalibration;
-              const clamped = Math.min(CONFIG.pedometer.stepLengthMax, Math.max(CONFIG.pedometer.stepLengthMin, raw));
-              currentStepLength = currentStepLength * 0.6 + clamped * 0.4;
-            }
-            stepsSinceLastCalibration = 0;
-            gpsDistanceSinceLastCalibration = 0;
+          if (stepsSinceLastCalibration >= CONFIG.pedometer.calibrationSteps || gpsDistanceSinceLastCalibration > 0.01) {
+            calibrateStepLengthFromGPS(gpsDistanceSinceLastCalibration);
           }
-          lastValidPosition = { lat: latitude, lng: longitude, ts: now };
-          addPathPoint(latitude, longitude);
+          lastValidPosition = { lat: filteredLat, lng: filteredLng, timestamp: now };
+          updatePath(filteredLat, filteredLng);
           fusionBadge.innerHTML = `📍 GPS | Bước ${currentStepLength.toFixed(2)}m`;
         }
-      } else if (valid) {
-        lastValidPosition = { lat: latitude, lng: longitude, ts: now };
-        addPathPoint(latitude, longitude);
+      } else {
+        if (valid) {
+          lastValidPosition = { lat: filteredLat, lng: filteredLng, timestamp: now };
+          updatePath(filteredLat, filteredLng);
+        }
       }
+      
+      if (currentDistanceKm >= targetDistanceKm) completeGoal();
     }
     
     function handlePositionError(err) {
-      gpsStatusEl.innerHTML = `❌ Mất GPS - Dùng bước chân`;
-    }
-
-    // ---------- QUẢN LÝ ĐƯỜNG ĐI (TỐI ƯU) ----------
-    function addPathPoint(lat, lng) {
-      pathCoordinates.push([lat, lng]);
-      if (pathCoordinates.length > CONFIG.map.maxPathPoints) {
-        pathCoordinates = pathCoordinates.slice(-CONFIG.map.maxPathPoints);
-      }
-      
-      const now = Date.now();
-      if (now - lastMapUpdateTime > CONFIG.map.updateInterval) {
-        updateMapDisplay();
-        lastMapUpdateTime = now;
-      } else {
-        // Lên lịch cập nhật nếu chưa có
-        if (!window._mapUpdatePending) {
-          window._mapUpdatePending = true;
-          setTimeout(() => {
-            updateMapDisplay();
-            lastMapUpdateTime = Date.now();
-            window._mapUpdatePending = false;
-          }, CONFIG.map.updateInterval);
-        }
-      }
+      gpsStatusEl.innerHTML = `❌ Mất GPS`;
     }
     
-    function updateMapDisplay() {
-      if (!map || pathCoordinates.length === 0) return;
-      
-      // Cập nhật polyline
-      if (!pathPolyline) {
-        pathPolyline = L.polyline(pathCoordinates, {
-          color: '#ff5722',
-          weight: 7,
-          opacity: 0.9,
-          smoothFactor: 1.0
-        }).addTo(map);
-      } else {
-        pathPolyline.setLatLngs(pathCoordinates);
-      }
-      
-      // Marker vị trí hiện tại
-      const last = pathCoordinates[pathCoordinates.length-1];
-      const icon = L.divIcon({
-        html: '<div style="background:#ff5722; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 0 12px #ff5722;"></div>',
-        iconSize: [24,24],
-        iconAnchor: [12,12]
+    function startWatchingGPS() {
+      if (watchId !== null) return;
+      watchId = navigator.geolocation.watchPosition(handlePosition, handlePositionError, {
+        enableHighAccuracy: true, maximumAge: 0, timeout: 5000
       });
-      
-      if (userMarker) {
-        userMarker.setLatLng(last);
-      } else {
-        userMarker = L.marker(last, {icon}).addTo(map);
-      }
-      
-      // Marker xuất phát
-      if (!startMarker && isActive && pathCoordinates.length > 0) {
-        const startIcon = L.divIcon({
-          html: '<div style="background:#10b981; width:16px; height:16px; border-radius:50%; border:3px solid white;"></div>',
-          iconSize: [22,22],
-          iconAnchor: [11,11]
-        });
-        startMarker = L.marker(pathCoordinates[0], {icon: startIcon}).addTo(map);
-        startMarker.bindTooltip('🚩 Xuất phát', {permanent: false});
-      }
-      
-      // Chỉ setView nếu điểm mới ngoài khung nhìn
-      const bounds = map.getBounds();
-      if (!bounds.contains(L.latLng(last))) {
-        map.setView(last, map.getZoom());
+    }
+    
+    function stopWatchingGPS() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
       }
     }
 
-    // ---------- ACTIVITY CONTROL ----------
+    // ---------- ĐIỀU KHIỂN ----------
     function startActivity() {
-      if (!navigator.geolocation) return;
-      if (watchId === null) {
-        watchId = navigator.geolocation.watchPosition(handlePosition, handlePositionError, {
-          enableHighAccuracy: true,
-          maximumAge: 2000,
-          timeout: 8000
-        });
-      }
+      startWatchingGPS();
       isActive = true; isPaused = false;
-      startTime = Date.now() - elapsedSeconds * 1000;
+      if (!startTime) startTime = Date.now() - elapsedSeconds * 1000;
       timerInterval = setInterval(() => {
         if (isActive && !isPaused) {
-          elapsedSeconds = Math.floor((Date.now() - startTime)/1000);
+          elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
           updateUI();
         }
       }, 200);
-      pauseBtn.disabled = false; stopBtn.disabled = false;
-      pauseBtn.innerHTML = '<i class="fas fa-pause"></i> TẠM DỪNG';
+      startBtn.disabled = true; pauseBtn.disabled = false; stopBtn.disabled = false;
     }
     
     function pauseActivity() {
       if (!isActive) return;
       isPaused = !isPaused;
-      if (isPaused) {
-        clearInterval(timerInterval);
-        pauseBtn.innerHTML = '<i class="fas fa-play"></i> TIẾP TỤC';
-      } else {
+      if (isPaused) clearInterval(timerInterval);
+      else {
         startTime = Date.now() - elapsedSeconds * 1000;
         timerInterval = setInterval(() => {
-          elapsedSeconds = Math.floor((Date.now() - startTime)/1000);
+          elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
           updateUI();
         }, 200);
-        pauseBtn.innerHTML = '<i class="fas fa-pause"></i> TẠM DỪNG';
       }
+      pauseBtn.innerHTML = isPaused ? '<i class="fas fa-play"></i> TIẾP TỤC' : '<i class="fas fa-pause"></i> TẠM DỪNG';
     }
     
     function stopActivity() {
       isActive = false; isPaused = false;
       clearInterval(timerInterval);
-      if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-      }
-      pauseBtn.disabled = true; stopBtn.disabled = true;
-      showSummary();
+      startBtn.disabled = false; pauseBtn.disabled = true; stopBtn.disabled = true;
+      stopWatchingGPS();
     }
     
-    function completeGoal() {
-      if (!isActive) return;
-      isActive = false; isPaused = false;
-      clearInterval(timerInterval);
-      if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-      }
-      pauseBtn.disabled = true; stopBtn.disabled = true;
-      
-      voucherCodeEl.textContent = 'VTGO-' + Math.random().toString(36).substring(2,8).toUpperCase();
-      voucherModal.style.visibility = 'visible';
-    }
-    
-    // ---------- VẼ CUNG ĐƯỜNG LÊN CANVAS ----------
-    function drawRouteOnCanvas() {
-      if (!routeCanvas || pathCoordinates.length < 2) return;
-      
-      const ctx = routeCanvas.getContext('2d');
-      const w = routeCanvas.width, h = routeCanvas.height;
-      ctx.clearRect(0, 0, w, h);
-      
-      let minLat = 90, maxLat = -90, minLng = 180, maxLng = -180;
-      pathCoordinates.forEach(([lat, lng]) => {
-        if (lat < minLat) minLat = lat;
-        if (lat > maxLat) maxLat = lat;
-        if (lng < minLng) minLng = lng;
-        if (lng > maxLng) maxLng = lng;
-      });
-      
-      const pad = 0.1;
-      const latRange = maxLat - minLat || 0.001;
-      const lngRange = maxLng - minLng || 0.001;
-      minLat -= latRange * pad;
-      maxLat += latRange * pad;
-      minLng -= lngRange * pad;
-      maxLng += lngRange * pad;
-      
-      const scaleX = w / (maxLng - minLng);
-      const scaleY = h / (maxLat - minLat);
-      
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(0, 0, w, h);
-      
-      ctx.beginPath();
-      ctx.strokeStyle = '#ff5722';
-      ctx.lineWidth = 6;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowColor = '#ff3b00';
-      ctx.shadowBlur = 8;
-      
-      pathCoordinates.forEach(([lat, lng], i) => {
-        const x = (lng - minLng) * scaleX;
-        const y = h - (lat - minLat) * scaleY;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-      
-      if (pathCoordinates.length > 0) {
-        const start = pathCoordinates[0];
-        const end = pathCoordinates[pathCoordinates.length-1];
-        const sx = (start[1] - minLng) * scaleX;
-        const sy = h - (start[0] - minLat) * scaleY;
-        const ex = (end[1] - minLng) * scaleX;
-        const ey = h - (end[0] - minLat) * scaleY;
-        
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = '#10b981';
-        ctx.beginPath();
-        ctx.arc(sx, sy, 6, 0, 2*Math.PI);
-        ctx.fill();
-        ctx.fillStyle = '#ff5722';
-        ctx.beginPath();
-        ctx.arc(ex, ey, 6, 0, 2*Math.PI);
-        ctx.fill();
-      }
-    }
-    
-    function showSummary() {
-      summaryDistance.textContent = Math.round(currentDistanceKm * 1000);
-      summaryTime.textContent = formatTime(elapsedSeconds);
-      summarySteps.textContent = steps;
-      drawRouteOnCanvas();
-      summaryModal.classList.add('show');
-    }
-    
-    function resetToWelcome() {
-      // Reset state
-      currentDistanceKm = 0; steps = 0; elapsedSeconds = 0;
+    function resetSession() {
+      currentDistanceKm = 0; steps = 0; elapsedSeconds = 0; startTime = null;
+      resetKalman();
       lastValidPosition = null; lastStepTime = 0; shakeCounter = 0;
       currentStepLength = CONFIG.pedometer.defaultStepLength;
       stepsSinceLastCalibration = 0; gpsDistanceSinceLastCalibration = 0;
+      stepTrustDisplay.innerHTML = '✅ Hợp lệ'; stepTrustDisplay.style.color = '#4ade80';
       
-      // Xóa map layers
+      pathCoordinates = [];
       if (pathPolyline) map.removeLayer(pathPolyline);
       pathPolyline = null;
       if (userMarker) map.removeLayer(userMarker);
       userMarker = null;
       if (startMarker) map.removeLayer(startMarker);
       startMarker = null;
-      pathCoordinates = [];
       
-      summaryModal.classList.remove('show');
-      welcomeScreen.style.display = 'flex';
-      mainApp.style.display = 'none';
-      
-      randomTargetUnder100();
+      generateRandomTarget();
       updateUI();
       fusionBadge.innerHTML = '🧭 Sẵn sàng';
-      stepTrustDisplay.innerHTML = '✅ Hợp lệ';
-      stepTrustDisplay.style.color = '#4ade80';
+    }
+    
+    function completeGoal() {
+      if (!isActive) return;
+      isActive = false; isPaused = false;
+      clearInterval(timerInterval);
+      startBtn.disabled = true; pauseBtn.disabled = true; stopBtn.disabled = true;
+      voucherCodeEl.textContent = 'VTGO-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      modalOverlay.style.visibility = 'visible';
+    }
+
+    // ---------- MAP ----------
+    function initMap() {
+      map = L.map('map', { zoomControl: false, attributionControl: false }).setView([10.3469, 107.0843], 17);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 21 }).addTo(map);
+      L.control.attribution({position: 'bottomleft'}).addTo(map);
+      L.control.zoom({position: 'bottomright'}).addTo(map);
+      navigator.geolocation.getCurrentPosition(pos => {
+        map.setView([pos.coords.latitude, pos.coords.longitude], 18);
+        updatePath(pos.coords.latitude, pos.coords.longitude);
+      }, () => {}, { enableHighAccuracy: true });
     }
 
     // ---------- EVENT LISTENERS ----------
+    randomTargetBtn.addEventListener('click', () => { if (!isActive) generateRandomTarget(); });
+    startBtn.addEventListener('click', () => { if (!isActive) { if (currentDistanceKm === 0) resetSession(); startActivity(); } });
     pauseBtn.addEventListener('click', pauseActivity);
     stopBtn.addEventListener('click', stopActivity);
-    voucherOkBtn.addEventListener('click', () => {
-      voucherModal.style.visibility = 'hidden';
-      showSummary();
-    });
-    newRunBtn.addEventListener('click', resetToWelcome);
-    voucherModal.addEventListener('click', (e) => {
-      if (e.target === voucherModal) {
-        voucherModal.style.visibility = 'hidden';
-        showSummary();
-      }
-    });
+    continueBtn.addEventListener('click', () => { modalOverlay.style.visibility = 'hidden'; generateRandomTarget(); if (!isActive) startActivity(); });
+    finishBtn.addEventListener('click', () => { modalOverlay.style.visibility = 'hidden'; stopActivity(); resetSession(); });
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) { modalOverlay.style.visibility = 'hidden'; stopActivity(); resetSession(); } });
 
-    // ---------- MAP INIT ----------
-    function initMap() {
-      map = L.map('map', { 
-        zoomControl: false, 
-        attributionControl: false,
-        fadeAnimation: false,
-        markerZoomAnimation: false
-      }).setView([10.3469, 107.0843], 17);
-      
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
-        maxZoom: 21,
-        attribution: '&copy; OpenStreetMap'
-      }).addTo(map);
-      
-      L.control.attribution({position: 'bottomleft'}).addTo(map);
-      L.control.zoom({position: 'bottomright'}).addTo(map);
-      
-      navigator.geolocation.getCurrentPosition(p => {
-        map.setView([p.coords.latitude, p.coords.longitude], 18);
-        addPathPoint(p.coords.latitude, p.coords.longitude);
-        updateMapDisplay();
-      }, () => {}, { enableHighAccuracy: true, timeout: 5000 });
-    }
-    
+    // Khởi động
     initMap();
     initPedometer();
+    initCompass();
+    generateRandomTarget();
     updateUI();
   })();
+
+  // Đăng ký Service Worker cho PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('PWA Service Worker đã được đăng ký.', reg))
+        .catch(err => console.error('Lỗi đăng ký Service Worker:', err));
+    });
+  }
 </script>
 </body>
 </html>
