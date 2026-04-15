@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>VungTauGO! - Map Mượt & Cung Đường Chính Xác</title>
+  <title>VungTauGO! - Chạy & Nhận Voucher</title>
   
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -14,7 +14,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* ... (giữ nguyên style cũ) ... */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
@@ -310,7 +309,6 @@
     let pathPolyline;
     let pathCoordinates = [];
     let lastMapUpdateTime = 0;
-    let pendingPathCoords = null;
     
     // UI Elements
     const welcomeScreen = document.getElementById('welcomeScreen');
@@ -515,14 +513,13 @@
         updateMapDisplay();
         lastMapUpdateTime = now;
       } else {
-        // Lưu lại tọa độ cuối để cập nhật sau
-        pendingPathCoords = [lat, lng];
-        if (!window._mapUpdateScheduled) {
-          window._mapUpdateScheduled = true;
+        // Lên lịch cập nhật nếu chưa có
+        if (!window._mapUpdatePending) {
+          window._mapUpdatePending = true;
           setTimeout(() => {
             updateMapDisplay();
             lastMapUpdateTime = Date.now();
-            window._mapUpdateScheduled = false;
+            window._mapUpdatePending = false;
           }, CONFIG.map.updateInterval);
         }
       }
@@ -543,7 +540,7 @@
         pathPolyline.setLatLngs(pathCoordinates);
       }
       
-      // Cập nhật marker vị trí hiện tại
+      // Marker vị trí hiện tại
       const last = pathCoordinates[pathCoordinates.length-1];
       const icon = L.divIcon({
         html: '<div style="background:#ff5722; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 0 12px #ff5722;"></div>',
@@ -713,11 +710,13 @@
     }
     
     function resetToWelcome() {
+      // Reset state
       currentDistanceKm = 0; steps = 0; elapsedSeconds = 0;
       lastValidPosition = null; lastStepTime = 0; shakeCounter = 0;
       currentStepLength = CONFIG.pedometer.defaultStepLength;
       stepsSinceLastCalibration = 0; gpsDistanceSinceLastCalibration = 0;
       
+      // Xóa map layers
       if (pathPolyline) map.removeLayer(pathPolyline);
       pathPolyline = null;
       if (userMarker) map.removeLayer(userMarker);
