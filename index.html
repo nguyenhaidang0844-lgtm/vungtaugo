@@ -1,509 +1,949 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Bản đồ lộ trình - Cảm biến bước chân & La bàn</title>
-    <!-- Leaflet (bản đồ ổn định, hiện đại) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none; /* tránh chọn text khi thao tác */
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a2a32;
-            color: #eee;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        /* Header thông tin */
-        .info-panel {
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(8px);
-            padding: 12px 16px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 12px;
-            border-bottom: 1px solid #2c4c5c;
-            z-index: 10;
-        }
-        .info-card {
-            background: #0f2128;
-            border-radius: 24px;
-            padding: 8px 16px;
-            min-width: 100px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .info-card .label {
-            font-size: 12px;
-            opacity: 0.7;
-            letter-spacing: 1px;
-        }
-        .info-card .value {
-            font-size: 22px;
-            font-weight: bold;
-            color: #ffb347;
-        }
-        .controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        button {
-            background: #2c7da0;
-            border: none;
-            color: white;
-            font-weight: bold;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        button:active { transform: scale(0.96); background: #1f5e7a; }
-        button.stop { background: #b43b3b; }
-        .status-badge {
-            background: #2c2c2c;
-            border-radius: 30px;
-            padding: 6px 14px;
-            font-size: 13px;
-            font-family: monospace;
-        }
-        /* Map container */
-        .map-container {
-            flex: 1;
-            width: 100%;
-            position: relative;
-        }
-        #map {
-            height: 100%;
-            width: 100%;
-            background: #1e3b44;
-        }
-        .legend {
-            position: absolute;
-            bottom: 20px;
-            right: 10px;
-            background: rgba(0,0,0,0.6);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            pointer-events: none;
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-        @media (max-width: 600px) {
-            .info-card .value { font-size: 18px; }
-            .info-card { padding: 4px 12px; }
-            button { padding: 6px 16px; font-size: 14px; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f15">
+  <link rel="manifest" href="manifest.json">
+  <title>🏃 VungTauGO!</title>
+  
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Font Awesome & Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0b0f15;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 8px;
+      color: #fff;
+    }
+    #app {
+      width: 100%;
+      max-width: 480px;
+      background: #141a24;
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -8px #00000080;
+      display: flex;
+      flex-direction: column;
+      height: 820px;
+      max-height: 96vh;
+      position: relative;
+    }
+    
+    /* Header */
+    .header {
+      padding: 18px 20px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 22px;
+      background: linear-gradient(135deg, #ff9f2e, #ff5722);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .diamond-balance {
+      background: #212838;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #a5f3fc;
+      border: 1px solid #3e5068;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    /* Tab Navigation */
+    .tabs {
+      display: flex;
+      margin: 8px 16px 0;
+      background: #1a2332;
+      border-radius: 40px;
+      padding: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      text-align: center;
+      padding: 12px 0;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #9ca8bb;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: transparent;
+    }
+    .tab-btn.active {
+      background: #ff6b00;
+      color: white;
+      box-shadow: 0 4px 10px #ff6b0050;
+    }
+    
+    /* Views */
+    .view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 12px 12px;
+      display: none;
+    }
+    .view.active { display: block; }
+    
+    /* Dashboard */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin: 16px 0 12px;
+    }
+    .stat-card {
+      background: #1e2636;
+      border-radius: 24px;
+      padding: 14px 6px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #8a9bb5;
+      text-transform: uppercase;
+    }
+    .progress-section {
+      background: #1e2636;
+      border-radius: 28px;
+      padding: 16px;
+      margin: 8px 0 16px;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .progress-bar-bg {
+      height: 12px;
+      background: #2e3b4e;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff9f2e, #ff5722);
+      border-radius: 20px;
+      transition: width 0.3s;
+    }
+    .map-container {
+      height: 240px;
+      border-radius: 28px;
+      overflow: hidden;
+      margin: 8px 0 16px;
+      border: 2px solid #2e3b4e;
+      position: relative;
+    }
+    #map { height: 100%; width: 100%; }
+    .gps-status-badge {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .btn {
+      flex: 1;
+      padding: 16px 8px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 18px;
+      border: none;
+      background: #2d3748;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #ff5722;
+      box-shadow: 0 6px 14px #ff572280;
+    }
+    .btn:disabled { opacity: 0.4; pointer-events: none; }
+    
+    /* Welcome Screen */
+    .welcome-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #0b0f15f0;
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      visibility: visible;
+    }
+    .welcome-card {
+      background: #1a2332;
+      border-radius: 48px;
+      padding: 36px 28px;
+      width: 90%;
+      max-width: 360px;
+      text-align: center;
+      border: 2px solid #ff9f2e;
+      box-shadow: 0 20px 40px #000;
+    }
+    .target-randomizer {
+      background: #212838;
+      border-radius: 30px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+    .target-value {
+      font-size: 64px;
+      font-weight: 800;
+      color: #ffb347;
+      line-height: 1.2;
+    }
+    .random-target-btn {
+      background: #ff6b00;
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 14px 24px;
+      border-radius: 40px;
+      font-size: 18px;
+      margin: 12px 0;
+      cursor: pointer;
+    }
+    
+    /* Quest & Shop Cards */
+    .section-title {
+      font-weight: 700;
+      margin: 20px 0 12px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .quest-card, .voucher-card {
+      background: #1e2636;
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 12px;
+      border: 1px solid #2e3b4e;
+    }
+    .reward-badge {
+      background: #2a3a4a;
+      padding: 4px 12px;
+      border-radius: 30px;
+      color: #fbbf24;
+      font-weight: 600;
+    }
+    
+    /* Voucher minh họa */
+    .voucher-partner {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .partner-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      background: linear-gradient(145deg, #2a3a4a, #1e2a3a);
+      box-shadow: 0 6px 12px #00000030;
+      color: #ffb347;
+    }
+    .voucher-info h4 {
+      margin-bottom: 4px;
+      font-size: 18px;
+    }
+    .voucher-desc {
+      color: #b0c4de;
+      font-size: 14px;
+    }
+    .voucher-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .voucher-cost {
+      background: #2a3a4a;
+      padding: 8px 18px;
+      border-radius: 40px;
+      color: #a5f3fc;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .btn-redeem {
+      background: #ff6b00;
+      border: none;
+      color: white;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #000000b0;
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      visibility: hidden;
+    }
+    .modal-card {
+      background: #1e293b;
+      border-radius: 40px;
+      padding: 28px 24px;
+      max-width: 340px;
+      width: 90%;
+      text-align: center;
+      border: 2px solid #fbbf24;
+    }
+    .modal-icon { font-size: 60px; margin-bottom: 12px; }
+    .voucher-code {
+      background: #0f172a;
+      padding: 16px;
+      border-radius: 20px;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #facc15;
+      border: 2px dashed #fbbf24;
+      margin: 20px 0;
+    }
+    .modal-buttons { display: flex; gap: 10px; }
+    .modal-btn {
+      background: #2d3748;
+      border: none;
+      color: white;
+      padding: 14px;
+      flex: 1;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .modal-btn.primary { background: #ff6b00; }
+    .footnote {
+      padding: 10px 20px 16px;
+      font-size: 11px;
+      color: #7c8ba0;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
 </head>
 <body>
-
-<div class="info-panel">
-    <div class="info-card">
-        <div class="label">🚶 BƯỚC CHÂN</div>
-        <div class="value" id="stepCount">0</div>
+<div id="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo"><i class="fas fa-map-marked-alt"></i> VungTauGO!</div>
+    <div class="diamond-balance" id="diamondDisplay"><i class="fas fa-gem"></i> <span id="diamondAmount">120</span></div>
+  </div>
+  
+  <!-- Welcome Screen -->
+  <div class="welcome-overlay" id="welcomeScreen">
+    <div class="welcome-card">
+      <i class="fas fa-person-walking" style="font-size: 48px; color: #ff9f2e;"></i>
+      <h2 style="margin: 16px 0 8px;">Chào mừng!</h2>
+      <p style="color: #b0c4de;">Hãy chọn mục tiêu đi bộ hôm nay</p>
+      <div class="target-randomizer">
+        <div style="font-size: 14px; color: #8a9bb5;">MỤC TIÊU</div>
+        <div class="target-value" id="welcomeTargetDisplay">75m</div>
+        <button class="random-target-btn" id="welcomeRandomBtn"><i class="fas fa-dice"></i> Random (dưới 100m)</button>
+      </div>
+      <button class="btn btn-primary" id="startFromWelcomeBtn" style="width:100%; padding:18px;">
+        <i class="fas fa-play"></i> BẮT ĐẦU HÀNH TRÌNH
+      </button>
+      <p style="margin-top: 16px; font-size: 12px; opacity:0.7;">Mỗi bước chân = Kim cương 💎<br>Checkpoint nhận quà thật</p>
     </div>
-    <div class="info-card">
-        <div class="label">📏 QUÃNG ĐƯỜNG (m)</div>
-        <div class="value" id="distance">0.0</div>
+  </div>
+  
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="home"><i class="fas fa-home"></i> Trang chủ</button>
+    <button class="tab-btn" data-tab="quests"><i class="fas fa-tasks"></i> Nhiệm vụ</button>
+    <button class="tab-btn" data-tab="shop"><i class="fas fa-ticket-alt"></i> Đổi quà</button>
+  </div>
+  
+  <!-- Home View -->
+  <div id="homeView" class="view active">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="distanceDisplay">0</div>
+        <div class="stat-label">Mét</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stepsDisplay">0</div>
+        <div class="stat-label">Bước chân</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="timerDisplay">00:00</div>
+        <div class="stat-label">Thời gian</div>
+      </div>
     </div>
-    <div class="info-card">
-        <div class="label">🧭 HƯỚNG (°)</div>
-        <div class="value" id="headingVal">---</div>
+    
+    <div class="progress-section">
+      <div class="progress-header">
+        <span><i class="fas fa-bullseye"></i> Mục tiêu hôm nay</span>
+        <span id="dailyProgressText">0/75 m</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="dailyProgressBar" style="width:0%"></div>
+      </div>
+      <div style="margin-top:10px; display:flex; justify-content:space-between;">
+        <span><i class="fas fa-gem"></i> <span id="dailyReward">+30</span> 💎 khi hoàn thành</span>
+        <span id="checkpointHint">🏪 3 checkpoint</span>
+      </div>
     </div>
-    <div class="controls">
-        <button id="startBtn">▶ BẮT ĐẦU</button>
-        <button id="stopBtn" class="stop">⏹️ DỪNG</button>
+    
+    <div class="map-container">
+      <div id="map"></div>
+      <div class="gps-status-badge" id="gpsStatusBadge">🛰️ Đang chờ GPS...</div>
     </div>
+    
+    <div class="action-buttons">
+      <button class="btn btn-primary" id="startBtn"><i class="fas fa-play"></i> BẮT ĐẦU</button>
+      <button class="btn" id="pauseBtn" disabled><i class="fas fa-pause"></i> TẠM DỪNG</button>
+      <button class="btn" id="stopBtn" disabled><i class="fas fa-stop"></i> KẾT THÚC</button>
+    </div>
+    <div class="footnote">
+      <span><i class="fas fa-shoe-prints"></i> Đi bộ = Kim cương</span>
+      <span>🏆 Checkpoint nhận quà</span>
+    </div>
+  </div>
+  
+  <!-- Quest View -->
+  <div id="questsView" class="view">
+    <div class="section-title"><i class="fas fa-fire" style="color:#ff9800"></i> Nhiệm vụ hàng ngày</div>
+    <div id="dailyQuestContainer"></div>
+    <div class="section-title"><i class="fas fa-compass" style="color:#4fc3f7"></i> Khám phá Vũng Tàu</div>
+    <div id="exploreQuestContainer"></div>
+  </div>
+  
+  <!-- Shop View -->
+  <div id="shopView" class="view">
+    <div class="section-title"><i class="fas fa-store"></i> Đối tác ưu đãi</div>
+    <div id="voucherListContainer"></div>
+    <div style="margin-top:16px; font-size:14px; color:#9ca8bb; text-align:center;">
+      💡 Đi bộ để kiếm kim cương đổi voucher thật!
+    </div>
+  </div>
 </div>
-<div class="map-container">
-    <div id="map"></div>
-    <div class="legend">📍 Đường màu cam: lộ trình từ cảm biến | 🔵 Chấm xanh: GPS hiện tại</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="voucherModal">
+  <div class="modal-card">
+    <div class="modal-icon" id="modalIcon">🏆</div>
+    <h2 id="modalTitle">Chúc mừng!</h2>
+    <p id="modalMessage">Bạn đã hoàn thành mục tiêu</p>
+    <div id="voucherCodeContainer" style="display:none;">
+      <div class="voucher-code" id="voucherCode">VTGO-ABC123</div>
+      <p>Mã giảm giá đặc biệt</p>
+    </div>
+    <div class="modal-buttons">
+      <button class="modal-btn primary" id="modalCloseBtn">Đóng</button>
+    </div>
+  </div>
 </div>
 
 <script>
-    // ----------------------------- THAM SỐ CHÍNH -----------------------------
-    let tracking = false;           // trạng thái ghi nhận lộ trình
-    let steps = 0;                  // số bước đếm được
-    let totalDistance = 0;          // tổng quãng đường (mét)
-    let stepLength = 0.7;           // chiều dài bước trung bình (m) – có thể điều chỉnh
+  (function(){
+    "use strict";
     
-    // Dữ liệu lộ trình (tọa độ theo bước chân + hướng)
-    let pathCoords = [];            // mảng {lat, lng}
-    let lastStepLatLng = null;      // vị trí sau bước cuối (dùng để nối tiếp)
-    let lastHeading = 0;            // hướng di chuyển (độ) từ la bàn
-    let currentLocation = { lat: 0, lng: 0 };   // vị trí GPS hiện tại
+    // ---------- CẤU HÌNH ----------
+    const CONFIG = {
+      kalman: { Q: 0.001, R: 10, P: 1 },
+      pedometer: {
+        minStepInterval: 280, maxStepFreq: 3.5, threshold: 11.5,
+        shakePenaltyThreshold: 18, maxShakeCount: 3,
+        defaultStepLength: 0.75,
+      },
+      gps: { 
+        minDistance: 5,            // mét - chỉ cập nhật khi di chuyển >5m
+        maxSpeed: 2.5, 
+        maxJumpDistance: 0.015, 
+        weakSignalThreshold: 30,
+        highAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      },
+      compass: { alphaFilter: 0.2, deadReckoningEnabled: true }
+    };
     
-    // Cảm biến và step detection
-    let lastPeakTime = 0;
-    let lastMagnitude = 1.0;
-    let stepDetectEnabled = false;
-    let accelerometerData = { x: 0, y: 0, z: 0 };
+    // ---------- STATE ----------
+    let state = {
+      diamonds: 120,
+      targetMeters: 75,
+      currentDistanceMeters: 0,
+      steps: 0,
+      isActive: false,
+      isPaused: false,
+      startTime: null,
+      elapsedSeconds: 0,
+      timerInterval: null,
+      dailyCompleted: false,
+      
+      kalman: { lat: null, lng: null, vLat: 0, vLng: 0, P: CONFIG.kalman.P },
+      lastGpsTimestamp: null,
+      lastFusionTimestamp: null,
+      lastValidPosition: null,
+      watchId: null,
+      
+      currentStepLength: CONFIG.pedometer.defaultStepLength,
+      stepsSinceLastCalibration: 0,
+      gpsDistanceSinceLastCalibration: 0,
+      lastStepTime: 0,
+      shakeCounter: 0,
+      
+      compassHeading: null,
+      accHistory: [],
+      isMoving: false,
+      
+      checkpoints: [],
+      checkedInToday: new Set(),
+      quests: [],
+      vouchers: []
+    };
     
-    // Biến lưu trữ interval cho GPS watch
-    let watchId = null;
-    let map = null;
-    let polylineLayer = null;       // đường vẽ lộ trình
-    let userMarker = null;          // marker GPS hiện tại
-    let startMarker = null;         // điểm bắt đầu
+    // Map objects
+    let map, userMarker, pathPolyline, pathCoordinates = [];
+    let checkpointMarkers = [];
     
-    // Hàm khởi tạo bản đồ (Leaflet)
-    function initMap(lat, lng) {
-        if (map) return;
-        map = L.map('map').setView([lat, lng], 18);
-        // Dùng lớp bản đồ ổn định, đẹp (CartoDB Voyager – hỗ trỳ HTTPS, nhanh)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; CartoDB',
-            subdomains: 'abcd',
-            maxZoom: 19,
-            minZoom: 15
-        }).addTo(map);
-        
-        // Marker vị trí hiện tại (GPS)
-        userMarker = L.marker([lat, lng], { icon: L.divIcon({ className: 'gps-marker', html: '📍', iconSize: [24,24] }) }).addTo(map);
-        startMarker = L.marker([lat, lng], { icon: L.divIcon({ className: 'start-marker', html: '🚩', iconSize: [24,24] }) }).addTo(map);
-        // Khởi tạo polyline rỗng
-        polylineLayer = L.polyline([], { color: '#ff9f4a', weight: 5, opacity: 0.8 }).addTo(map);
-        
-        // Lưu vị trí bắt đầu
-        currentLocation = { lat, lng };
-        lastStepLatLng = { lat, lng };
-        pathCoords = [{ lat, lng }];
-        updatePolyline();
+    // UI Elements
+    const diamondSpan = document.getElementById('diamondAmount');
+    const distanceEl = document.getElementById('distanceDisplay');
+    const stepsEl = document.getElementById('stepsDisplay');
+    const timerEl = document.getElementById('timerDisplay');
+    const dailyProgressText = document.getElementById('dailyProgressText');
+    const dailyProgressBar = document.getElementById('dailyProgressBar');
+    const dailyRewardSpan = document.getElementById('dailyReward');
+    const gpsStatusBadge = document.getElementById('gpsStatusBadge');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const welcomeTargetDisplay = document.getElementById('welcomeTargetDisplay');
+    const welcomeRandomBtn = document.getElementById('welcomeRandomBtn');
+    const startFromWelcomeBtn = document.getElementById('startFromWelcomeBtn');
+    const dailyQuestContainer = document.getElementById('dailyQuestContainer');
+    const exploreQuestContainer = document.getElementById('exploreQuestContainer');
+    const voucherListContainer = document.getElementById('voucherListContainer');
+    const modalOverlay = document.getElementById('voucherModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalIcon = document.getElementById('modalIcon');
+    const voucherCodeContainer = document.getElementById('voucherCodeContainer');
+    const voucherCodeEl = document.getElementById('voucherCode');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    
+    // ---------- TIỆN ÍCH ----------
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = Math.floor(sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+    function metersToLat(m) { return m / 111320; }
+    function metersToLng(m, lat) { return m / (111320 * Math.cos(lat * Math.PI/180)); }
+    
+    // ---------- WELCOME & MỤC TIÊU ----------
+    function randomTargetUnder100() {
+      state.targetMeters = Math.floor(Math.random() * 90) + 10;
+      welcomeTargetDisplay.textContent = state.targetMeters + 'm';
+      updateTargetUI();
+    }
+    function updateTargetUI() {
+      dailyProgressText.textContent = `${Math.round(state.currentDistanceMeters)}/${state.targetMeters} m`;
+      const percent = Math.min(100, (state.currentDistanceMeters / state.targetMeters) * 100);
+      dailyProgressBar.style.width = percent + '%';
     }
     
-    // Cập nhật đường đi trên bản đồ
-    function updatePolyline() {
-        if (!polylineLayer) return;
-        const latlngs = pathCoords.map(p => [p.lat, p.lng]);
-        polylineLayer.setLatLngs(latlngs);
-        if (map && latlngs.length > 0) {
-            // Tự động zoom vào điểm cuối (nếu đang theo dõi)
-            const last = latlngs[latlngs.length-1];
-            map.panTo(last, { animate: true, duration: 0.3 });
-        }
+    // ---------- KALMAN & GPS ----------
+    function resetKalman() {
+      state.kalman = { lat: null, lng: null, vLat: 0, vLng: 0, P: CONFIG.kalman.P };
+    }
+    function kalmanUpdate(measLat, measLng, dt, accuracy) {
+      if (state.kalman.lat === null) {
+        state.kalman.lat = measLat; state.kalman.lng = measLng;
+        return { lat: measLat, lng: measLng };
+      }
+      const R = Math.max(1, Math.min(30, accuracy)) * 0.4;
+      const Q = CONFIG.kalman.Q * dt;
+      let predLat = state.kalman.lat + state.kalman.vLat * dt;
+      let predLng = state.kalman.lng + state.kalman.vLng * dt;
+      let P = state.kalman.P + Q;
+      const K = P / (P + R);
+      const innovLat = measLat - predLat;
+      const innovLng = measLng - predLng;
+      state.kalman.lat = predLat + K * innovLat;
+      state.kalman.lng = predLng + K * innovLng;
+      state.kalman.vLat = state.kalman.vLat + (K * innovLat) / dt;
+      state.kalman.vLng = state.kalman.vLng + (K * innovLng) / dt;
+      state.kalman.P = (1 - K) * P;
+      return { lat: state.kalman.lat, lng: state.kalman.lng };
     }
     
-    // Thêm điểm mới vào lộ trình (dựa trên bước chân + hướng)
-    function addStepPoint() {
-        if (!tracking) return;
-        if (!lastStepLatLng) return;
-        if (lastHeading === null || isNaN(lastHeading)) return;
-        
-        // Tính toán vị trí mới dựa trên hướng và độ dài bước
-        const rad = lastHeading * Math.PI / 180;
-        const deltaLat = (stepLength * Math.cos(rad)) / 111320;   // 1 độ vĩ ≈ 111320 m
-        const deltaLng = (stepLength * Math.sin(rad)) / (111320 * Math.cos(lastStepLatLng.lat * Math.PI/180));
-        
-        const newLat = lastStepLatLng.lat + deltaLat;
-        const newLng = lastStepLatLng.lng + deltaLng;
-        const newPoint = { lat: newLat, lng: newLng };
-        
-        // Cập nhật mảng lộ trình
-        pathCoords.push(newPoint);
-        lastStepLatLng = newPoint;
-        updatePolyline();
-        
-        // Cập nhật quãng đường (tích lũy)
-        totalDistance += stepLength;
-        document.getElementById('distance').innerText = totalDistance.toFixed(1);
-    }
-    
-    // ---------- XỬ LÝ GIA TỐC KẾ (PHÁT HIỆN BƯỚC CHÂN) ----------
-    // Bộ lọc low-pass đơn giản
-    let filteredMagnitude = 1.0;
-    const ALPHA = 0.3;   // hệ số lọc
-    
-    function handleAccelerometer(event) {
-        if (!stepDetectEnabled) return;
-        const acc = event.accelerationIncludingGravity;
-        if (!acc) return;
-        let { x, y, z } = acc;
-        if (x === null || y === null || z === null) return;
-        
-        // Tính độ lớn vector (g)
-        let magnitude = Math.sqrt(x*x + y*y + z*z);
-        // Lọc low-pass để loại bỏ nhiễu rung nhẹ
-        filteredMagnitude = ALPHA * magnitude + (1 - ALPHA) * filteredMagnitude;
-        
-        // Ngưỡng phát hiện bước: magnitude > 1.15g và có biến động rõ (khác baseline)
-        // Đồng thời tránh double count với khoảng cách thời gian
-        const now = Date.now();
-        const isPeak = (filteredMagnitude > 1.18 && filteredMagnitude > lastMagnitude + 0.05);
-        if (isPeak && (now - lastPeakTime) > 280) {
-            // Phát hiện bước chân
-            steps++;
-            document.getElementById('stepCount').innerText = steps;
-            // Vẽ điểm lộ trình tương ứng với bước này
-            addStepPoint();
-            lastPeakTime = now;
-        }
-        lastMagnitude = filteredMagnitude;
-    }
-    
-    // ---------- XỬ LÝ LA BÀN (HƯỚNG DI CHUYỂN) ----------
-    let compassHeading = 0;     // 0-360 độ, 0 = Bắc
-    function handleOrientation(event) {
-        if (!tracking) return;
-        // Lấy góc alpha (xoay theo trục dọc), cần chuẩn hóa về hướng đi
-        let alpha = event.alpha;      // 0-360, góc so với hướng Bắc
-        if (alpha === null || alpha === undefined) return;
-        // Beta, gamma có thể dùng để hiệu chỉnh nhưng đơn giản lấy alpha
-        // Đảm bảo giá trị hợp lý
-        let heading = alpha;
-        if (isNaN(heading)) heading = lastHeading;
-        else {
-            heading = (heading + 360) % 360;
-            // Lọc nhiễu nhẹ: nếu thay đổi đột ngột quá 20 độ trong 1 lần thì giữ nguyên (tùy chọn)
-            if (Math.abs(heading - lastHeading) > 30 && lastHeading !== 0) {
-                // giữ nguyên heading cũ để tránh nhiễu la bàn
-            } else {
-                lastHeading = heading;
+    function handlePosition(pos) {
+      const { latitude, longitude, accuracy } = pos.coords;
+      const now = pos.timestamp;
+      state.lastGpsTimestamp = now;
+      
+      if (accuracy > CONFIG.gps.weakSignalThreshold) {
+        gpsStatusBadge.innerHTML = `⚠️ GPS yếu (${Math.round(accuracy)}m)`;
+        return;
+      }
+      gpsStatusBadge.innerHTML = `🛰️ GPS ${Math.round(accuracy)}m`;
+      
+      let filtered = { lat: latitude, lng: longitude };
+      if (state.lastFusionTimestamp && state.kalman.lat) {
+        const dt = (now - state.lastFusionTimestamp) / 1000;
+        if (dt > 0 && dt < 10) filtered = kalmanUpdate(latitude, longitude, dt, accuracy);
+      }
+      state.lastFusionTimestamp = now;
+      
+      if (!state.lastValidPosition) {
+        state.lastValidPosition = { lat: filtered.lat, lng: filtered.lng, timestamp: now };
+        updatePath(filtered.lat, filtered.lng);
+        return;
+      }
+      
+      const dist = haversine(state.lastValidPosition.lat, state.lastValidPosition.lng, filtered.lat, filtered.lng);
+      const timeDiff = (now - state.lastValidPosition.timestamp) / 1000;
+      let valid = true;
+      if (timeDiff > 0) {
+        const speed = dist / timeDiff;
+        if (speed > CONFIG.gps.maxSpeed || dist > CONFIG.gps.maxJumpDistance) valid = false;
+        if (!state.isMoving && speed < 0.5) valid = false;
+      }
+      
+      if (valid && state.isActive && !state.isPaused) {
+        if (dist * 1000 >= CONFIG.gps.minDistance) {
+          state.gpsDistanceSinceLastCalibration += dist;
+          if (state.stepsSinceLastCalibration >= 30) {
+            const stepDistKm = (state.stepsSinceLastCalibration * state.currentStepLength) / 1000;
+            const ratio = state.gpsDistanceSinceLastCalibration / stepDistKm;
+            if (ratio > 0.7 && ratio < 1.5) {
+              state.currentStepLength = (state.gpsDistanceSinceLastCalibration * 1000) / state.stepsSinceLastCalibration;
             }
+            state.stepsSinceLastCalibration = 0;
+            state.gpsDistanceSinceLastCalibration = 0;
+          }
+          state.lastValidPosition = { lat: filtered.lat, lng: filtered.lng, timestamp: now };
+          updatePath(filtered.lat, filtered.lng);
+          checkNearbyCheckpoints(filtered.lat, filtered.lng);
         }
-        compassHeading = lastHeading;
-        document.getElementById('headingVal').innerText = Math.round(compassHeading);
+      } else if (valid) {
+        state.lastValidPosition = { lat: filtered.lat, lng: filtered.lng, timestamp: now };
+        updatePath(filtered.lat, filtered.lng);
+      }
     }
     
-    // ---------- XỬ LÝ GPS (LẤY VỊ TRÍ THỰC, HIỆU CHỈNH) ----------
-    function onLocationUpdate(position) {
-        const { latitude, longitude, accuracy } = position.coords;
-        if (!latitude || !longitude) return;
-        // Cập nhật vị trí hiện tại
-        currentLocation = { lat: latitude, lng: longitude };
-        
-        // Nếu bản đồ chưa khởi tạo => khởi tạo với vị trí GPS
-        if (!map) {
-            initMap(latitude, longitude);
-            // Đặt điểm bắt đầu lộ trình = vị trí GPS đầu tiên
-            lastStepLatLng = { lat: latitude, lng: longitude };
-            pathCoords = [{ lat: latitude, lng: longitude }];
-            updatePolyline();
-        } else {
-            // Cập nhật marker GPS
-            if (userMarker) userMarker.setLatLng([latitude, longitude]);
-            // Nếu tracking chưa bắt đầu, ta vẫn cập nhật điểm bắt đầu (để khi start sẽ chính xác)
-            if (!tracking) {
-                // Nếu không tracking, ta chỉ cập nhật vị trí bắt đầu tiềm năng
-                if (lastStepLatLng === null || pathCoords.length === 0) {
-                    lastStepLatLng = { lat: latitude, lng: longitude };
-                    pathCoords = [{ lat: latitude, lng: longitude }];
-                    updatePolyline();
-                    if (startMarker) startMarker.setLatLng([latitude, longitude]);
-                }
-            } else {
-                // (Tùy chọn) Khi GPS có độ chính xác cao, có thể hiệu chỉnh drift
-                // Nhưng giữ nguyên logic PDR để minh họa: Không can thiệp vào pathCoords,
-                // chỉ dùng GPS để hiển thị vị trí thực tế.
-            }
-        }
+    function startWatchingGPS() {
+      if (state.watchId !== null) return;
+      state.watchId = navigator.geolocation.watchPosition(handlePosition, err => {
+        gpsStatusBadge.innerHTML = '❌ Mất GPS';
+      }, {
+        enableHighAccuracy: CONFIG.gps.highAccuracy,
+        maximumAge: CONFIG.gps.maximumAge,
+        timeout: CONFIG.gps.timeout,
+        distanceFilter: CONFIG.gps.minDistance  // chỉ cập nhật khi di chuyển > minDistance mét
+      });
+    }
+    function stopWatchingGPS() {
+      if (state.watchId) navigator.geolocation.clearWatch(state.watchId);
+      state.watchId = null;
     }
     
-    function startGPS() {
-        if (watchId) navigator.geolocation.clearWatch(watchId);
-        watchId = navigator.geolocation.watchPosition(
-            onLocationUpdate,
-            (err) => console.warn("Lỗi GPS:", err.message),
-            { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
-        );
-        // Lấy vị trí 1 lần nhanh để hiển thị bản đồ
-        navigator.geolocation.getCurrentPosition(
-            (pos) => onLocationUpdate(pos),
-            (err) => {
-                console.warn("Không thể lấy vị trí, dùng mặc định TP.HCM");
-                initMap(10.8231, 106.6297);
-            },
-            { timeout: 5000 }
-        );
+    // ---------- PEDOMETER ----------
+    function handleMotion(e) {
+      if (!state.isActive || state.isPaused) return;
+      const acc = e.accelerationIncludingGravity;
+      if (!acc) return;
+      const mag = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+      const now = Date.now();
+      
+      state.accHistory.push(mag);
+      if (state.accHistory.length > 10) state.accHistory.shift();
+      if (state.accHistory.length >= 5) {
+        const avg = state.accHistory.reduce((s,v)=>s+v,0)/state.accHistory.length;
+        const variance = state.accHistory.reduce((s,v)=>s+(v-avg)**2,0)/state.accHistory.length;
+        state.isMoving = variance > 0.8;
+      }
+      
+      if (mag > CONFIG.pedometer.shakePenaltyThreshold) {
+        state.shakeCounter++;
+        if (state.shakeCounter >= CONFIG.pedometer.maxShakeCount) {
+          state.steps = Math.max(0, state.steps - 2);
+          state.currentDistanceMeters = Math.max(0, state.currentDistanceMeters - 2 * state.currentStepLength);
+          state.shakeCounter = 0;
+        }
+        return;
+      } else state.shakeCounter = Math.max(0, state.shakeCounter-1);
+      
+      if (mag > CONFIG.pedometer.threshold && (now - state.lastStepTime) > CONFIG.pedometer.minStepInterval) {
+        const freq = 1000 / (now - state.lastStepTime);
+        if (freq < CONFIG.pedometer.maxStepFreq) {
+          state.steps++;
+          state.stepsSinceLastCalibration++;
+          state.lastStepTime = now;
+          const stepMeters = state.currentStepLength;
+          state.currentDistanceMeters += stepMeters;
+          state.diamonds += 1;
+          
+          if (state.lastValidPosition && state.compassHeading !== null) {
+            const headingRad = state.compassHeading * Math.PI/180;
+            const dLat = metersToLat(stepMeters * Math.cos(headingRad));
+            const dLng = metersToLng(stepMeters * Math.sin(headingRad), state.lastValidPosition.lat);
+            const newPos = { lat: state.lastValidPosition.lat + dLat, lng: state.lastValidPosition.lng + dLng };
+            updatePath(newPos.lat, newPos.lng);
+          }
+          
+          refreshUI();
+          if (state.currentDistanceMeters >= state.targetMeters && !state.dailyCompleted) {
+            completeGoal();
+          }
+        }
+      }
     }
     
-    // ------------------- YÊU CẦU QUYỀN CẢM BIẾN (iOS/Android) -------------------
-    // iOS: cần gọi requestPermission cho DeviceMotion và DeviceOrientation
-    async function requestSensorPermissions() {
-        // DeviceOrientationEvent (la bàn)
-        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-            try {
-                const response = await DeviceOrientationEvent.requestPermission();
-                if (response === 'granted') {
-                    window.addEventListener('deviceorientation', handleOrientation);
-                } else {
-                    console.warn("Từ chối quyền la bàn");
-                }
-            } catch(e) { console.warn(e); }
-        } else {
-            window.addEventListener('deviceorientation', handleOrientation);
-        }
-        
-        // DeviceMotionEvent (gia tốc kế)
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-            try {
-                const response = await DeviceMotionEvent.requestPermission();
-                if (response === 'granted') {
-                    window.addEventListener('devicemotion', handleAccelerometer);
-                } else {
-                    console.warn("Từ chối quyền gia tốc kế");
-                }
-            } catch(e) { console.warn(e); }
-        } else {
-            window.addEventListener('devicemotion', handleAccelerometer);
-        }
+    function initPedometer() {
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        document.body.addEventListener('click', function req() {
+          DeviceMotionEvent.requestPermission().then(p => {
+            if (p === 'granted') window.addEventListener('devicemotion', handleMotion);
+          });
+          document.body.removeEventListener('click', req);
+        }, { once: true });
+      } else {
+        window.addEventListener('devicemotion', handleMotion);
+      }
     }
     
-    // Hàm bắt đầu theo dõi (kích hoạt cảm biến và reset dữ liệu)
-    async function startTracking() {
-        if (tracking) return;
-        // Reset thông số
-        steps = 0;
-        totalDistance = 0;
-        document.getElementById('stepCount').innerText = "0";
-        document.getElementById('distance').innerText = "0.0";
-        
-        // Reset lộ trình dựa trên vị trí GPS hiện tại (nếu có)
-        if (currentLocation.lat !== 0 && currentLocation.lng !== 0) {
-            lastStepLatLng = { lat: currentLocation.lat, lng: currentLocation.lng };
-            pathCoords = [{ lat: currentLocation.lat, lng: currentLocation.lng }];
-        } else {
-            // fallback nếu chưa có GPS
-            if (lastStepLatLng) pathCoords = [lastStepLatLng];
-            else pathCoords = [];
+    // ---------- LA BÀN ----------
+    window.addEventListener('deviceorientation', e => {
+      if (e.alpha !== null) state.compassHeading = e.alpha;
+    }, true);
+    
+    // ---------- CHECKPOINT ----------
+    function initCheckpoints(lat, lng) {
+      state.checkpoints = [
+        { id: 'cp1', name: 'Circle K', lat: lat+0.0008, lng: lng+0.0005, reward: 15, icon: 'fa-store' },
+        { id: 'cp2', name: 'Highlands Coffee', lat: lat-0.0006, lng: lng+0.001, reward: 20, icon: 'fa-mug-saucer' },
+        { id: 'cp3', name: 'Family Mart', lat: lat+0.0003, lng: lng-0.0007, reward: 10, icon: 'fa-basket-shopping' },
+      ];
+      addCheckpointMarkers();
+    }
+    function checkNearbyCheckpoints(lat, lng) {
+      state.checkpoints.forEach(cp => {
+        if (state.checkedInToday.has(cp.id)) return;
+        if (haversine(lat, lng, cp.lat, cp.lng) < 0.0005) {
+          state.checkedInToday.add(cp.id);
+          state.diamonds += cp.reward;
+          showModal('📍 Check-in!', `${cp.name} +${cp.reward} 💎`, false);
+          refreshUI();
         }
-        updatePolyline();
-        
-        lastPeakTime = 0;
-        lastMagnitude = 1.0;
-        filteredMagnitude = 1.0;
-        tracking = true;
-        stepDetectEnabled = true;
-        
-        // Nếu chưa có bản đồ và chưa có GPS, thử get current position
-        if (!map) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    if (!map) initMap(pos.coords.latitude, pos.coords.longitude);
-                    lastStepLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    pathCoords = [lastStepLatLng];
-                    updatePolyline();
-                },
-                () => {
-                    initMap(10.8231, 106.6297);
-                }
-            );
-        }
-        
-        // Đánh dấu trạng thái giao diện
-        document.getElementById('startBtn').style.opacity = "0.6";
-        document.getElementById('stopBtn').style.opacity = "1";
+      });
     }
     
-    function stopTracking() {
-        tracking = false;
-        stepDetectEnabled = false;
-        document.getElementById('startBtn').style.opacity = "1";
-        // Không reset map, chỉ dừng ghi nhận bước
+    // ---------- VOUCHER MINH HỌA ----------
+    function initVouchers() {
+      state.vouchers = [
+        { id: 'v1', partner: 'Circle K', discount: 'Giảm 20% hóa đơn', cost: 80, icon: 'fa-store', color: '#e67e22' },
+        { id: 'v2', partner: 'Highlands Coffee', discount: 'Tặng 1 trà đào', cost: 100, icon: 'fa-mug-hot', color: '#b85b14' },
+        { id: 'v3', partner: 'Family Mart', discount: 'Mì ý sốt kem 30k', cost: 60, icon: 'fa-utensils', color: '#2ecc71' },
+      ];
     }
     
-    // Hàm reset toàn bộ lộ trình (xóa đường, reset bước)
-    function resetPath() {
-        if (tracking) stopTracking();
-        steps = 0;
-        totalDistance = 0;
-        document.getElementById('stepCount').innerText = "0";
-        document.getElementById('distance').innerText = "0.0";
-        if (currentLocation.lat && currentLocation.lng) {
-            lastStepLatLng = { lat: currentLocation.lat, lng: currentLocation.lng };
-            pathCoords = [{ lat: currentLocation.lat, lng: currentLocation.lng }];
-        } else {
-            pathCoords = [];
-            lastStepLatLng = null;
+    function renderVouchers() {
+      voucherListContainer.innerHTML = state.vouchers.map(v => `
+        <div class="voucher-card">
+          <div class="voucher-partner">
+            <div class="partner-logo" style="background: ${v.color}20; color: ${v.color};">
+              <i class="fas ${v.icon}"></i>
+            </div>
+            <div class="voucher-info">
+              <h4>${v.partner}</h4>
+              <div class="voucher-desc">${v.discount}</div>
+            </div>
+          </div>
+          <div class="voucher-footer">
+            <span class="voucher-cost"><i class="fas fa-gem"></i> ${v.cost}</span>
+            <button class="btn-redeem" onclick="window.redeemVoucher('${v.id}')" ${state.diamonds < v.cost ? 'disabled' : ''}>
+              Đổi ngay
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+    window.redeemVoucher = function(voucherId) {
+      const v = state.vouchers.find(v => v.id === voucherId);
+      if (!v || state.diamonds < v.cost) return;
+      state.diamonds -= v.cost;
+      showModal('🎉 Đổi quà thành công!', `Mã: VTGO-${Math.random().toString(36).substring(2,8).toUpperCase()} - ${v.discount}`, true);
+      refreshUI();
+      renderVouchers();
+    };
+    
+    // ---------- UI & MAP ----------
+    function initMap() {
+      map = L.map('map', { zoomControl: false }).setView([10.3469, 107.0843], 17);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 21 }).addTo(map);
+      navigator.geolocation.getCurrentPosition(pos => {
+        map.setView([pos.coords.latitude, pos.coords.longitude], 17);
+        initCheckpoints(pos.coords.latitude, pos.coords.longitude);
+      }, () => {}, { enableHighAccuracy: true });
+    }
+    function updatePath(lat, lng) {
+      pathCoordinates.push([lat, lng]);
+      if (pathPolyline) pathPolyline.setLatLngs(pathCoordinates);
+      else pathPolyline = L.polyline(pathCoordinates, { color: '#ff5722', weight: 8 }).addTo(map);
+      const icon = L.divIcon({ html: '<div style="background:#ff5722; width:18px; height:18px; border-radius:50%; border:3px solid white;"></div>', iconSize: [24,24] });
+      if (userMarker) userMarker.setLatLng([lat, lng]);
+      else userMarker = L.marker([lat, lng], { icon }).addTo(map);
+      map.setView([lat, lng]);
+    }
+    function addCheckpointMarkers() {
+      if (checkpointMarkers.length) checkpointMarkers.forEach(m => map.removeLayer(m));
+      checkpointMarkers = [];
+      state.checkpoints.forEach(cp => {
+        const icon = L.divIcon({ html: `<div style="background:#f59e0b; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:3px solid white;"><i class="fas ${cp.icon}" style="color:white;"></i></div>`, iconSize: [34,34] });
+        const m = L.marker([cp.lat, cp.lng], { icon }).addTo(map);
+        m.bindTooltip(cp.name);
+        checkpointMarkers.push(m);
+      });
+    }
+    
+    function refreshUI() {
+      diamondSpan.textContent = state.diamonds;
+      distanceEl.textContent = Math.round(state.currentDistanceMeters);
+      stepsEl.textContent = state.steps;
+      timerEl.textContent = formatTime(state.elapsedSeconds);
+      updateTargetUI();
+    }
+    
+    function completeGoal() {
+      if (!state.isActive) return;
+      state.dailyCompleted = true;
+      state.diamonds += 50;
+      stopActivity();
+      showModal('🏆 Hoàn thành!', `Bạn đã đi ${state.targetMeters}m và nhận 50 💎`, false);
+    }
+    
+    function startActivity() {
+      if (state.isActive) return;
+      startWatchingGPS();
+      state.isActive = true; state.isPaused = false;
+      if (!state.startTime) state.startTime = Date.now() - state.elapsedSeconds * 1000;
+      state.timerInterval = setInterval(() => {
+        if (state.isActive && !state.isPaused) {
+          state.elapsedSeconds = Math.floor((Date.now() - state.startTime) / 1000);
+          refreshUI();
         }
-        updatePolyline();
-        if (startMarker && lastStepLatLng) startMarker.setLatLng([lastStepLatLng.lat, lastStepLatLng.lng]);
-        tracking = false;
-        stepDetectEnabled = false;
+      }, 200);
+      startBtn.disabled = true; pauseBtn.disabled = false; stopBtn.disabled = false;
+    }
+    function pauseActivity() {
+      if (!state.isActive) return;
+      state.isPaused = !state.isPaused;
+      pauseBtn.innerHTML = state.isPaused ? '<i class="fas fa-play"></i> TIẾP TỤC' : '<i class="fas fa-pause"></i> TẠM DỪNG';
+    }
+    function stopActivity() {
+      state.isActive = false; state.isPaused = false;
+      clearInterval(state.timerInterval);
+      startBtn.disabled = false; pauseBtn.disabled = true; stopBtn.disabled = true;
+      stopWatchingGPS();
     }
     
-    // Gắn sự kiện cho nút bấm và yêu cầu quyền khi người dùng tương tác lần đầu
-    document.addEventListener('DOMContentLoaded', () => {
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        
-        // Yêu cầu quyền cảm biến và GPS ngay khi bấm nút "BẮT ĐẦU" (để đáp ứng yêu cầu tương tác của iOS)
-        startBtn.addEventListener('click', async () => {
-            // Yêu cầu quyền cảm biến (nếu chưa có)
-            await requestSensorPermissions();
-            // Yêu cầu quyền GPS (nếu chưa)
-            if (!watchId) {
-                startGPS();
-                // Đợi một chút để GPS cập nhật vị trí ban đầu
-                setTimeout(() => {
-                    startTracking();
-                }, 300);
-            } else {
-                startTracking();
-            }
-        });
-        
-        stopBtn.addEventListener('click', () => {
-            stopTracking();
-        });
-        
-        // Nút reset (tuỳ chọn thêm: nhấn giữ hoặc thêm nút, nhưng hiện tại có thể thêm bằng cách nhấn dừng và start lại)
-        // Để tiện, thêm một nút reset ẩn? Thôi, người dùng có thể reload trang hoặc bấm dừng, start lại sẽ reset.
-        // Nhưng theo logic, khi start lại cần reset dữ liệu cũ, chúng ta đã có reset trong startTracking.
-        // Tuy nhiên để tránh lỗi lộ trình chồng, nếu đang tracking mà bấm start thì không làm gì.
-        // Cải tiến: Nếu muốn reset hoàn toàn, dùng nút "Xóa đường" nhưng thiết kế gọn nhẹ, thêm bằng cách nhấn giữ start?
-        // Tạo thêm nút nhỏ reset trên giao diện? Sẽ thêm nút reset ngay cạnh dừng
-        const resetBtn = document.createElement('button');
-        resetBtn.innerText = '🗑️ XÓA ĐƯỜNG';
-        resetBtn.style.background = '#5a626e';
-        resetBtn.style.marginLeft = '8px';
-        resetBtn.addEventListener('click', () => {
-            if (tracking) stopTracking();
-            resetPath();
-        });
-        document.querySelector('.controls').appendChild(resetBtn);
+    function showModal(title, msg, showCode = false) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = msg;
+      voucherCodeContainer.style.display = showCode ? 'block' : 'none';
+      if (showCode) voucherCodeEl.textContent = msg.includes('Mã:') ? msg.split('Mã:')[1].split(' - ')[0] : 'VTGO-XXXX';
+      modalOverlay.style.visibility = 'visible';
+    }
+    
+    // ---------- EVENT LISTENERS ----------
+    welcomeRandomBtn.addEventListener('click', randomTargetUnder100);
+    startFromWelcomeBtn.addEventListener('click', () => {
+      welcomeScreen.style.visibility = 'hidden';
+      startActivity();
+    });
+    startBtn.addEventListener('click', startActivity);
+    pauseBtn.addEventListener('click', pauseActivity);
+    stopBtn.addEventListener('click', stopActivity);
+    modalCloseBtn.addEventListener('click', () => modalOverlay.style.visibility = 'hidden');
+    
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.getElementById('homeView').classList.toggle('active', tab==='home');
+        document.getElementById('questsView').classList.toggle('active', tab==='quests');
+        document.getElementById('shopView').classList.toggle('active', tab==='shop');
+        if (tab === 'shop') renderVouchers();
+      });
     });
     
-    // Khởi động GPS ngay khi trang tải (để có vị trí ban đầu, nhưng không tự bật cảm biến)
-    window.addEventListener('load', () => {
-        startGPS();  // Lấy vị trí và hiển thị map nếu chưa
-        // Không tự động bắt đầu tracking để tránh spam cảm biến khi chưa được phép
-        // Nhưng nếu trình duyệt không yêu cầu quyền (Android), vẫn có thể hiển thị map
-        setTimeout(() => {
-            if (!map && currentLocation.lat === 0) {
-                initMap(10.8231, 106.6297); // fallback
-            }
-        }, 1500);
-    });
-    
-    // Xử lý khi thoát, clear watch
-    window.addEventListener('beforeunload', () => {
-        if (watchId) navigator.geolocation.clearWatch(watchId);
-        if (typeof DeviceMotionEvent !== 'undefined') window.removeEventListener('devicemotion', handleAccelerometer);
-        if (typeof DeviceOrientationEvent !== 'undefined') window.removeEventListener('deviceorientation', handleOrientation);
-    });
-    
-    // Bổ sung: hiển thị trạng thái rung lắc nhẹ (có thể thêm UI nhưng không bắt buộc)
-    // Ghi chú: Ứng dụng dùng cảm biến gia tốc để phát hiện bước, la bàn để xác định hướng, GPS làm mốc và hiển thị.
-    // Độ ổn định: bộ lọc low-pass giúp giảm rung lắc, ngưỡng phát hiện bước tối ưu cho đi bộ.
-    // Nếu muốn tinh chỉnh stepLength có thể thêm thanh trượt, nhưng đảm bảo yêu cầu.
-    
-    // Thông báo hướng dẫn ngắn cho người dùng (console)
-    console.log("✅ Ứng dụng sẵn sàng. Bấm 'BẮT ĐẦU' và cho phép cảm biến + vị trí. Đi bộ để vẽ lộ trình.");
-    console.log("🎯 Gia tốc kế phát hiện bước, la bàn xác định hướng, GPS hỗ trợ nền.");
+    // Khởi tạo
+    randomTargetUnder100();
+    initMap();
+    initPedometer();
+    initVouchers();
+    refreshUI();
+  })();
 </script>
 </body>
 </html>
